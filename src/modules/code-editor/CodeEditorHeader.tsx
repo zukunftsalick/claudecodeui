@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, Code2, Copy, Download, Eye, Maximize2, Minimize2, Save, Settings as SettingsIcon, X } from 'lucide-react';
+import { Check, Code2, Copy, Download, ExternalLink, Eye, Maximize2, Minimize2, Save, Settings as SettingsIcon, X } from 'lucide-react';
 
 import { copyTextToClipboard } from '@/shared/utils';
 import type { CodeEditorFile } from '@/shared/types';
@@ -10,6 +10,7 @@ type CodeEditorHeaderProps = {
   isFullscreen: boolean;
   isMarkdownFile: boolean;
   isHtmlPreviewFile: boolean;
+  // Whether the rendered view (Markdown or sandboxed HTML) is showing instead of the source.
   markdownPreview: boolean;
   saving: boolean;
   saveSuccess: boolean;
@@ -28,6 +29,8 @@ type CodeEditorHeaderProps = {
     editMarkdown: string;
     previewMarkdown: string;
     previewHtml: string;
+    previewHtmlInline: string;
+    editHtml: string;
     settings: string;
     download: string;
     save: string;
@@ -124,7 +127,7 @@ export default function CodeEditorHeader({
 
       {/* Buttons - don't shrink, always visible */}
       <div className="flex shrink-0 items-center gap-0.5">
-        {isMarkdownFile && (
+        {(isMarkdownFile || isHtmlPreviewFile) && (
           <button
             type="button"
             onClick={onToggleMarkdownPreview}
@@ -133,7 +136,9 @@ export default function CodeEditorHeader({
                 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
             }`}
-            title={markdownPreview ? labels.editMarkdown : labels.previewMarkdown}
+            title={isMarkdownFile
+              ? (markdownPreview ? labels.editMarkdown : labels.previewMarkdown)
+              : (markdownPreview ? labels.editHtml : labels.previewHtmlInline)}
           >
             {markdownPreview ? <Code2 className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
@@ -146,7 +151,7 @@ export default function CodeEditorHeader({
             className="flex items-center justify-center rounded-md p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
             title={labels.previewHtml}
           >
-            <Eye className="h-4 w-4" />
+            <ExternalLink className="h-4 w-4" />
           </button>
         )}
 

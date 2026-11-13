@@ -993,6 +993,11 @@ export type CodeEditorFile = {
   diffInfo?: CodeEditorDiffInfo | null;
   // 1-based line to reveal when the file opens (from a `path:line` reference).
   line?: number | null;
+  // Bumped when the same file is reopened after it changed on disk (e.g. the
+  // agent edited it), so the editor reloads instead of reusing the buffer.
+  revision?: number;
+  // Open Markdown/HTML in the rendered view rather than the source.
+  preferPreview?: boolean;
   [key: string]: unknown;
 };
 
@@ -1461,7 +1466,8 @@ export type PreferenceToggleKey =
   | 'showRawParameters'
   | 'showThinking'
   | 'sendByCtrlEnter'
-  | 'voiceEnabled';
+  | 'voiceEnabled'
+  | 'followAgentEdits';
 
 /** The full set of quick settings booleans keyed by PreferenceToggleKey, held together so the panel can read every toggle from one object. */
 export type QuickSettingsPreferences = Record<PreferenceToggleKey, boolean>;

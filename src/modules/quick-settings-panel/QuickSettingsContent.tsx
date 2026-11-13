@@ -4,6 +4,7 @@ import {
   Languages,
   Mic,
   Moon,
+  PanelRightOpen,
   Sun,
   type LucideIcon,
 } from 'lucide-react';
@@ -33,6 +34,11 @@ const TOOL_DISPLAY_TOGGLES: PreferenceToggleItem[] = [
     key: 'showThinking',
     labelKey: 'quickSettings.showThinking',
     icon: Brain,
+  },
+  {
+    key: 'followAgentEdits',
+    labelKey: 'quickSettings.followAgentEdits',
+    icon: PanelRightOpen,
   },
 ];
 

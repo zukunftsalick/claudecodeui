@@ -16,6 +16,8 @@ export type UiPreferences = {
   sidebarVisible: boolean;
   keepProjectsExpanded: boolean;
   voiceEnabled: boolean;
+  /** Open each file the agent writes or edits in the editor panel beside the chat. */
+  followAgentEdits: boolean;
 };
 
 export type UiPreferenceKey = keyof UiPreferences;
@@ -31,6 +33,7 @@ const DEFAULTS: UiPreferences = {
   sidebarVisible: true,
   keepProjectsExpanded: false,
   voiceEnabled: false,
+  followAgentEdits: true,
 };
 
 const PREFERENCE_KEYS = Object.keys(DEFAULTS) as UiPreferenceKey[];
