@@ -1,4 +1,4 @@
-import { MessageSquare, Terminal, Folder, GitBranch, ClipboardCheck, MonitorPlay, type LucideIcon } from 'lucide-react';
+import { MessageSquare, Terminal, Folder, GitBranch, ClipboardCheck, Hammer, MonitorPlay, type LucideIcon } from 'lucide-react';
 import { Fragment } from 'react';
 import type { Dispatch, KeyboardEvent, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +45,14 @@ const BROWSER_TAB: BuiltInTab = {
   icon: MonitorPlay,
 };
 
+// Xcode Cloud builds for the App Store Connect key set up on the server.
+const BUILDS_TAB: BuiltInTab = {
+  kind: 'builtin',
+  id: 'builds',
+  labelKey: 'tabs.builds',
+  icon: Hammer,
+};
+
 const TASKS_TAB: BuiltInTab = {
   kind: 'builtin',
   id: 'tasks',
@@ -64,6 +72,7 @@ export default function WorkspaceTabs({
 
   const builtInTabs: BuiltInTab[] = [
     ...BASE_TABS,
+    BUILDS_TAB,
     ...(shouldShowBrowserTab ? [BROWSER_TAB] : []),
     ...(shouldShowTasksTab ? [TASKS_TAB] : []),
   ];

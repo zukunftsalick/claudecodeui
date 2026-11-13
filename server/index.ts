@@ -53,6 +53,7 @@ import { assetsRoutes } from './modules/assets/index.js';
 import { fileTreeRoutes } from './modules/file-tree/index.js';
 import { worktreesRoutes } from './modules/worktrees/index.js';
 import { createDevPreviewGateway, createDevPreviewRouter } from './modules/dev-preview/index.js';
+import { createDefaultXcodeCloudService, createXcodeCloudRouter } from './modules/xcode-cloud/index.js';
 import browserUseMcpRoutes from './modules/browser-use/browser-use-mcp.routes.js';
 import { browserUseService } from './modules/browser-use/browser-use.service.js';
 import { initializeDatabase, sessionsDb } from './modules/database/index.js';
@@ -172,6 +173,9 @@ app.use('/api/auth', authRoutes);
 
 // File Tree API Routes (protected)
 app.use('/api/file-tree', authenticateToken, fileTreeRoutes);
+
+// Xcode Cloud builds through the App Store Connect API (protected)
+app.use('/api/xcode-cloud', authenticateToken, createXcodeCloudRouter(createDefaultXcodeCloudService()));
 
 // Lists dev servers that can be previewed (protected)
 app.use('/api/dev-preview', authenticateToken, createDevPreviewRouter({ domain: DEV_PREVIEW_DOMAIN, serverPort: DEV_PREVIEW_SERVER_PORT }));

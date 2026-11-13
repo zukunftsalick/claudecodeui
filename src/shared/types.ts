@@ -69,7 +69,7 @@ export type ProviderModelActions = {
 //----------------- PROJECTS AND SESSIONS ------------
 
 /** Identifies the workspace pane the user is looking at; plugin panes are namespaced by plugin id. */
-export type AppTab = 'chat' | 'files' | 'shell' | 'git' | 'tasks' | 'browser' | `plugin:${string}`;
+export type AppTab = 'chat' | 'files' | 'shell' | 'git' | 'tasks' | 'browser' | 'builds' | `plugin:${string}`;
 
 /** A message queued to be sent to a session at a future time. */
 export type ScheduledMessage = {
@@ -1008,6 +1008,76 @@ export type CodeEditorGotoTarget = {
   // 1-based, clamped to the document by the editor surface.
   line: number;
 };
+
+//----------------- XCODE CLOUD ------------
+
+/** An Xcode Cloud product (one app or framework) as listed by `/api/xcode-cloud/products`; the Builds tab's product picker shows these. */
+export type XcodeCloudProduct = {
+  id: string;
+  name: string;
+  productType: string;
+  // App Store Connect app id, used to link to the app's TestFlight page.
+  appId: string | null;
+  bundleId: string | null;
+};
+
+/** One Xcode Cloud workflow of a product; the Builds tab offers a Start build button per workflow. */
+export type XcodeCloudWorkflow = {
+  id: string;
+  name: string;
+  description: string | null;
+  isEnabled: boolean;
+};
+
+/** Error, warning and test-failure totals Xcode Cloud reports for a build or one of its actions. */
+export type XcodeCloudIssueCounts = {
+  errors: number;
+  warnings: number;
+  analyzerWarnings: number;
+  testFailures: number;
+};
+
+/** One Xcode Cloud build as shown in the Builds tab list. `executionProgress` is PENDING, RUNNING or COMPLETE; `completionStatus` (SUCCEEDED, FAILED, ERRORED, CANCELED, SKIPPED) is set once it completes. */
+export type XcodeCloudBuildRun = {
+  id: string;
+  number: number;
+  workflowId: string | null;
+  workflowName: string | null;
+  // The branch or tag reference id, reused to start the same workflow on the same branch.
+  sourceRefId: string | null;
+  branch: string | null;
+  commitSha: string | null;
+  commitMessage: string | null;
+  commitAuthor: string | null;
+  isPullRequestBuild: boolean;
+  executionProgress: string;
+  completionStatus: string | null;
+  startReason: string | null;
+  createdDate: string | null;
+  startedDate: string | null;
+  finishedDate: string | null;
+  issueCounts: XcodeCloudIssueCounts;
+};
+
+/** The details of one build the Builds tab shows when a build is opened: its actions (build, test, archive...) with issues and downloadable artifacts, plus the TestFlight builds it uploaded. */
+export type XcodeCloudBuildRunDetail = {
+  id: string;
+  actions: Array<{
+    id: string;
+    name: string;
+    actionType: string;
+    executionProgress: string;
+    completionStatus: string | null;
+    startedDate: string | null;
+    finishedDate: string | null;
+    issueCounts: XcodeCloudIssueCounts;
+    artifacts: Array<{ id: string; fileType: string; fileName: string; fileSize: number; downloadUrl: string | null }>;
+    issues: Array<{ id: string; issueType: string; message: string; category: string | null; filePath: string | null; lineNumber: number | null }>;
+  }>;
+  builds: Array<{ id: string; version: string; processingState: string | null; uploadedDate: string | null; expired: boolean }>;
+};
+
+// ---------------------------
 
 //----------------- DEV SERVER PREVIEW ------------
 

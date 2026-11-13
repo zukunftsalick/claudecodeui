@@ -613,6 +613,16 @@ export const api = {
       ),
   },
 
+  xcodeCloud: {
+    status: () => get('/api/xcode-cloud/status'),
+    products: () => get('/api/xcode-cloud/products'),
+    workflows: (productId: string) => get(`/api/xcode-cloud/products/${encodeURIComponent(productId)}/workflows`),
+    buildRuns: (productId: string) => get(`/api/xcode-cloud/products/${encodeURIComponent(productId)}/build-runs`),
+    buildRun: (buildRunId: string) => get(`/api/xcode-cloud/build-runs/${encodeURIComponent(buildRunId)}`),
+    startBuild: (body: { workflowId?: string; sourceRefId?: string; rebuildOfBuildRunId?: string; clean?: boolean }) =>
+      post('/api/xcode-cloud/build-runs', body),
+  },
+
   devPreview: {
     status: () => get('/api/dev-preview/status'),
   },
