@@ -48,7 +48,9 @@ export default function CodeEditor({
   const paletteOps = usePaletteOps();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showDiff, setShowDiff] = useState(Boolean(file.diffInfo));
-  const [markdownPreview, setMarkdownPreview] = useState(false);
+  // Rendered view (Markdown or HTML) instead of source. Files the agent just
+  // edited ask for it via `preferPreview`, so they open looking like the result.
+  const [markdownPreview, setMarkdownPreview] = useState(Boolean(file.preferPreview));
 
   // The code editor follows the app-wide theme; it has no theme of its own.
   const { isDarkMode } = useTheme();
@@ -127,6 +129,13 @@ export default function CodeEditor({
     const extension = file.name.split('.').pop()?.toLowerCase();
     return extension === 'html' || extension === 'htm';
   }, [file.name]);
+
+  // The editor instance is reused across files, so the preview mode is reset
+  // whenever a different file (not a refresh of the same one) is opened.
+  useEffect(() => {
+    setMarkdownPreview(Boolean(file.preferPreview) && !file.diffInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the path on purpose
+  }, [file.path]);
 
   const openHtmlPreview = useCallback(() => {
     const previewWindow = window.open('', '_blank');
@@ -324,6 +333,8 @@ export default function CodeEditor({
               editMarkdown: t('actions.editMarkdown'),
               previewMarkdown: t('actions.previewMarkdown'),
               previewHtml: t('actions.previewHtml', 'Open HTML preview in new tab'),
+              previewHtmlInline: t('actions.previewHtmlInline', 'Preview HTML'),
+              editHtml: t('actions.editHtml', 'Edit HTML'),
               settings: t('toolbar.settings'),
               download: t('actions.download'),
               save: t('actions.save'),
@@ -348,6 +359,8 @@ export default function CodeEditor({
               onChange={setContent}
               markdownPreview={markdownPreview}
               isMarkdownFile={isMarkdownFile}
+              isHtmlPreviewFile={isHtmlPreviewFile}
+              fileName={file.name}
               isDarkMode={isDarkMode}
               fontSize={fontSize}
               showLineNumbers={showLineNumbers}

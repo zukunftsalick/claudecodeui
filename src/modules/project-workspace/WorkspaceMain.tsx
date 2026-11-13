@@ -60,7 +60,7 @@ function WorkspaceMain({
   onRenameSession,
 }: WorkspaceMainProps) {
   const preferences = useUiPreferences();
-  const { showRawParameters, showThinking, sendByCtrlEnter } = preferences;
+  const { showRawParameters, showThinking, sendByCtrlEnter, followAgentEdits } = preferences;
 
   const { tasksEnabled, isTaskMasterInstalled } = useTasksSettings();
   const browserUseEnabled = useBrowserUseEnabled();
@@ -80,6 +80,7 @@ function WorkspaceMain({
     hasManualWidth,
     resizeHandleRef,
     handleFileOpen,
+    handleAgentFileEdit,
     handleCloseEditor,
     handleToggleEditorExpand,
     handleResizeStart,
@@ -175,6 +176,9 @@ function WorkspaceMain({
                 externalMessageUpdate={externalMessageUpdate}
                 newSessionTrigger={newSessionTrigger}
                 onShowAllTasks={tasksEnabled ? showAllTasks : null}
+                // On phones the editor covers the whole screen, so following
+                // edits there would hide the chat on every change.
+                onAgentFileEdit={followAgentEdits && !isMobile ? handleAgentFileEdit : undefined}
               />
             </WorkspaceErrorBoundary>
           </div>

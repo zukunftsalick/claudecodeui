@@ -47,6 +47,8 @@ type ChatInterfaceProps = {
   newSessionTrigger?: number;
   onTaskClick?: (...args: unknown[]) => void;
   onShowAllTasks?: (() => void) | null;
+  // Shows a file the agent just wrote or edited; omitted when following is off.
+  onAgentFileEdit?: (filePath: string) => void;
 };
 
 /**
@@ -70,6 +72,7 @@ function ChatInterface({
   externalMessageUpdate,
   newSessionTrigger,
   onShowAllTasks,
+  onAgentFileEdit,
 }: ChatInterfaceProps) {
   const { tasksEnabled, isTaskMasterInstalled } = useTasksSettings();
   const { subscribe, isConnected } = useWebSocket();
@@ -310,6 +313,7 @@ function ChatInterface({
     requestLatestMessages,
     sessionStore,
     onSteerOutcome: handleSteerOutcome,
+    onAgentFileEdit,
   });
 
   // Lets other modules (the quick settings Commands tab) hand text to the

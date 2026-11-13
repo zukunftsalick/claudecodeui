@@ -52,7 +52,7 @@ export default function CodeEditorMediaPreview({
   // this so a blob from a previously-opened file can never show under the new
   // file (the editor reuses this component instance across files).
   const [loadedKey, setLoadedKey] = useState<string | null>(null);
-  const sourceKey = `${projectId ?? ''}:${file.path}:${kind}`;
+  const sourceKey = `${projectId ?? ''}:${file.path}:${kind}:${file.revision ?? 0}`;
 
   useEffect(() => {
     if (!projectId) {

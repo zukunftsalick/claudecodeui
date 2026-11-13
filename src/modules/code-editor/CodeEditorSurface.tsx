@@ -7,12 +7,16 @@ import type { Extension } from '@codemirror/state';
 import type { CodeEditorGotoTarget } from '@/shared/types';
 
 import MarkdownPreview from '@/modules/code-editor/markdown/MarkdownPreview';
+import HtmlPreviewFrame from '@/modules/code-editor/HtmlPreviewFrame';
 
 type CodeEditorSurfaceProps = {
   content: string;
   onChange: (value: string) => void;
   markdownPreview: boolean;
   isMarkdownFile: boolean;
+  // HTML files share the preview toggle and render in a sandboxed frame.
+  isHtmlPreviewFile?: boolean;
+  fileName?: string;
   isDarkMode: boolean;
   fontSize: number;
   showLineNumbers: boolean;
@@ -21,12 +25,14 @@ type CodeEditorSurfaceProps = {
   gotoTarget?: CodeEditorGotoTarget | null;
 };
 
-/** Rendered by CodeEditor inside the code-editor module to show either the CodeMirror editing surface or the markdown preview. */
+/** Rendered by CodeEditor inside the code-editor module to show either the CodeMirror editing surface or the rendered Markdown/HTML preview. */
 export default function CodeEditorSurface({
   content,
   onChange,
   markdownPreview,
   isMarkdownFile,
+  isHtmlPreviewFile = false,
+  fileName = '',
   isDarkMode,
   fontSize,
   showLineNumbers,
@@ -56,6 +62,10 @@ export default function CodeEditorSurface({
       effects: EditorView.scrollIntoView(line.from, { y: 'center' }),
     });
   }, [view, gotoTarget, content]);
+
+  if (markdownPreview && isHtmlPreviewFile) {
+    return <HtmlPreviewFrame html={content} title={fileName} />;
+  }
 
   if (markdownPreview && isMarkdownFile) {
     return (

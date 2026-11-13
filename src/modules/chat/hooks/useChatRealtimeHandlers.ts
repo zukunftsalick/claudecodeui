@@ -7,6 +7,7 @@ import { playChatCompletionSound, playNotificationSound } from '@/shared/utils';
 import type { SessionStore } from '@/modules/chat/hooks/useSessionStore';
 import { normalizedToChatMessages } from '@/modules/chat/hooks/useChatMessages';
 import { sideQuestionStore } from '@/modules/chat/hooks/useSideQuestions';
+import { readAgentEditedFilePath } from '@/modules/chat/utils/agentFileEdits';
 import { collectRunningBackgroundTasks, listRunningBackgroundLaunches, readBackgroundTaskId, readBackgroundTaskStatus } from '@/modules/chat/utils/backgroundTasks';
 
 const isActionablePermissionRequest = (request: { toolName?: unknown } | null | undefined): boolean => {
@@ -51,6 +52,11 @@ type UseChatRealtimeHandlersArgs = {
    * for every live user message, steered or not — `delivered` with its id.
    */
   onSteerOutcome?: (sessionId: string, messageId: string, outcome: SteerOutcome) => void;
+  /**
+   * Called with a file's path once the agent, in the session being viewed,
+   * has successfully written or edited it, so the workspace can show it.
+   */
+  onAgentFileEdit?: (filePath: string) => void;
 };
 
 /* ------------------------------------------------------------------ */
@@ -87,7 +93,14 @@ export function useChatRealtimeHandlers({
   requestLatestMessages,
   sessionStore,
   onSteerOutcome,
+  onAgentFileEdit,
 }: UseChatRealtimeHandlersArgs) {
+  // Read through a ref so a new callback identity never rebinds the socket listener.
+  const onAgentFileEditRef = useRef(onAgentFileEdit);
+  onAgentFileEditRef.current = onAgentFileEdit;
+  // File-writing tool calls still waiting for their result, by tool-use id.
+  const pendingAgentFileEditsRef = useRef(new Map<string, string>());
+
   // Session switches can send `chat.subscribe` before this effect has a chance
   // to rebind the websocket listener. Read the visible session id from a ref
   // so a fast `chat_subscribed` ack is matched against the current view, not
@@ -323,6 +336,25 @@ export function useChatRealtimeHandlers({
       // card if it is one of its own.
       if (sid && msg.kind === 'text' && msg.role === 'user' && typeof msg.id === 'string') {
         onSteerOutcome?.(sid, msg.id, 'delivered');
+      }
+
+      // Follow the agent's file edits in the viewed session: remember the
+      // target on tool_use, open it once the matching result succeeds.
+      if (sid && sid === activeViewSessionId && typeof msg.toolId === 'string') {
+        if (msg.kind === 'tool_use') {
+          const editedPath = readAgentEditedFilePath(msg.toolName, msg.toolInput);
+          if (editedPath) {
+            pendingAgentFileEditsRef.current.set(msg.toolId, editedPath);
+          }
+        } else if (msg.kind === 'tool_result') {
+          const editedPath = pendingAgentFileEditsRef.current.get(msg.toolId);
+          if (editedPath) {
+            pendingAgentFileEditsRef.current.delete(msg.toolId);
+            if (!msg.isError) {
+              onAgentFileEditRef.current?.(editedPath);
+            }
+          }
+        }
       }
 
       // --- UI side effects for specific kinds ---

@@ -80,6 +80,46 @@ export const useEditorSidebar = ({
     [selectedProject?.projectId, t],
   );
 
+  // Follows the agent: shows the file it just wrote or edited beside the chat.
+  // Unlike `handleFileOpen` it never prompts — when the user has unsaved edits
+  // in the panel it leaves them alone rather than interrupting with a dialog.
+  const handleAgentFileEdit = useCallback(
+    (filePath: string) => {
+      if (hasUnsavedChangesRef.current) {
+        return;
+      }
+
+      const openFile = editingFileRef.current;
+      const isSameFile = openFile !== null
+        && openFile.path === filePath
+        && openFile.projectId === selectedProject?.projectId;
+
+      if (isSameFile) {
+        // Same file: bump the revision so the editor rereads it from disk and
+        // keeps whichever view (rendered or source) the user had chosen.
+        setEditingFile({
+          ...openFile,
+          diffInfo: null,
+          line: null,
+          revision: (openFile.revision ?? 0) + 1,
+        });
+        return;
+      }
+
+      const normalizedPath = filePath.replace(/\\/g, '/');
+      setEditingFile({
+        name: normalizedPath.split('/').pop() || filePath,
+        path: filePath,
+        projectId: selectedProject?.projectId,
+        diffInfo: null,
+        line: null,
+        revision: 0,
+        preferPreview: true,
+      });
+    },
+    [selectedProject?.projectId],
+  );
+
   const handleCloseEditor = useCallback(() => {
     setEditingFile(null);
     setEditorExpanded(false);
@@ -176,6 +216,7 @@ export const useEditorSidebar = ({
     hasManualWidth,
     resizeHandleRef,
     handleFileOpen,
+    handleAgentFileEdit,
     handleCloseEditor,
     handleToggleEditorExpand,
     handleResizeStart,

@@ -66,7 +66,9 @@ function QuickSettingsPanelView({ selectedProject, onInsertCommand }: QuickSetti
     showThinking: preferences.showThinking,
     sendByCtrlEnter: preferences.sendByCtrlEnter,
     voiceEnabled: preferences.voiceEnabled,
+    followAgentEdits: preferences.followAgentEdits,
   }), [
+    preferences.followAgentEdits,
     preferences.sendByCtrlEnter,
     preferences.showRawParameters,
     preferences.showThinking,
