@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { useCallback, useEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AppTab, Project, ProjectSession } from '@/shared/types';
@@ -20,6 +20,8 @@ type WorkspaceHeaderProps = {
   onMenuClick: () => void;
   /** Persists a new title for a session; resolves false when the backend refuses it. */
   onRenameSession: (sessionId: string, summary: string) => Promise<boolean>;
+  // The dev-server preview menu, shown at the end of the tab bar.
+  devPreviewMenu?: ReactNode;
 };
 
 /** Rendered by WorkspaceMain to show the workspace title and chat connection status alongside the scrollable tab bar. */
@@ -33,6 +35,7 @@ export default function WorkspaceHeader({
   isMobile,
   onMenuClick,
   onRenameSession,
+  devPreviewMenu,
 }: WorkspaceHeaderProps) {
   const { t } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -96,7 +99,7 @@ export default function WorkspaceHeader({
   };
 
   return (
-    <header className="pwa-header-safe flex-shrink-0 border-b border-border/60 bg-background/95 px-3 py-1.5 backdrop-blur-sm sm:px-4 sm:py-2">
+    <header className="pwa-header-safe relative z-30 flex-shrink-0 border-b border-border/60 bg-background/95 px-3 py-1.5 backdrop-blur-sm sm:px-4 sm:py-2">
       <div className="flex min-w-0 flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
         <div className="flex min-w-0 items-center gap-2 sm:max-w-[min(34%,24rem)] sm:flex-[1_1_18rem]">
           {isMobile && <MobileMenuButton onMenuClick={onMenuClick} />}
@@ -110,7 +113,8 @@ export default function WorkspaceHeader({
           <WorkspaceConnectionStatus />
         </div>
 
-        <div className="-mx-3 min-w-0 sm:mx-0 sm:flex-1">
+        <div className="-mx-3 flex min-w-0 items-center gap-1 sm:mx-0 sm:flex-1">
+          <div className="min-w-0 flex-1">
           <div className="relative ml-auto w-fit max-w-full">
             {canScrollLeft && (
               <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-background via-background/90 to-transparent" />
@@ -155,6 +159,8 @@ export default function WorkspaceHeader({
               </button>
             )}
           </div>
+          </div>
+          {devPreviewMenu && <div className="pr-3 sm:pr-0">{devPreviewMenu}</div>}
         </div>
       </div>
     </header>

@@ -90,6 +90,11 @@ export const useEditorSidebar = ({
       }
 
       const openFile = editingFileRef.current;
+      // A live dev-server preview already shows the result of the edit (hot
+      // reload), so it stays put instead of switching to the source file.
+      if (openFile?.devServerPort) {
+        return;
+      }
       const isSameFile = openFile !== null
         && openFile.path === filePath
         && openFile.projectId === selectedProject?.projectId;
@@ -118,6 +123,33 @@ export const useEditorSidebar = ({
       });
     },
     [selectedProject?.projectId],
+  );
+
+  // Shows a dev server running on the VPS in the panel. A click asks before
+  // replacing unsaved edits like opening a file does; an automatic open (a new
+  // server just appeared) never prompts and simply leaves the edits alone.
+  const handleOpenDevPreview = useCallback(
+    (port: number, { automatic = false }: { automatic?: boolean } = {}): boolean => {
+      if (hasUnsavedChangesRef.current) {
+        if (automatic || !window.confirm(t('unsavedChanges.confirmClose'))) {
+          return false;
+        }
+      }
+      if (automatic && editingFileRef.current?.devServerPort) {
+        // Already previewing a server: don't yank it away for another one.
+        return false;
+      }
+      setEditingFile({
+        name: `localhost:${port}`,
+        path: `devserver:${port}`,
+        projectId: selectedProject?.projectId,
+        diffInfo: null,
+        line: null,
+        devServerPort: port,
+      });
+      return true;
+    },
+    [selectedProject?.projectId, t],
   );
 
   const handleCloseEditor = useCallback(() => {
@@ -217,6 +249,7 @@ export const useEditorSidebar = ({
     resizeHandleRef,
     handleFileOpen,
     handleAgentFileEdit,
+    handleOpenDevPreview,
     handleCloseEditor,
     handleToggleEditorExpand,
     handleResizeStart,

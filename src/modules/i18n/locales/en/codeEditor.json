@@ -48,5 +48,18 @@
   "unsavedChanges": {
     "confirmClose": "You have unsaved changes. Close this file and discard them?",
     "indicator": "Unsaved changes"
+  },
+  "devPreview": {
+    "menuLabel": "Preview",
+    "menuTitle": "Preview a dev server",
+    "none": "No dev servers are running. Ask Claude to start one, and it will open here.",
+    "port": "Dev server",
+    "path": "Path",
+    "reload": "Reload",
+    "openInNewTab": "Open in new tab",
+    "loading": "Looking for dev servers...",
+    "notConfigured": "Dev server previews are not set up on this server yet. Set DEV_PREVIEW_DOMAIN and route *.<domain> to CloudCLI.",
+    "stopped": "Nothing is listening on port {{port}} right now.",
+    "frameTitle": "Preview of port {{port}}"
   }
 }

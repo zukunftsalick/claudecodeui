@@ -1,4 +1,5 @@
-import type { Server as HttpServer } from 'node:http';
+import type { IncomingMessage, Server as HttpServer } from 'node:http';
+import type { Duplex } from 'node:stream';
 
 import { WebSocket, WebSocketServer, type VerifyClientCallbackSync } from 'ws';
 
@@ -14,6 +15,12 @@ type WebSocketServerDependencies = {
   chat: Parameters<typeof handleChatConnection>[2];
   shell: Parameters<typeof handleShellConnection>[1];
   getPluginPort: Parameters<typeof handlePluginWsProxy>[2];
+  /**
+   * Offered every upgrade before this gateway. Returns true when it took the
+   * socket (the dev-preview proxy does this for its own hostnames), so the
+   * app's verifyClient never rejects a connection it doesn't own.
+   */
+  claimUpgrade?: (request: IncomingMessage, socket: Duplex, head: Buffer) => boolean;
 };
 
 /**
@@ -84,11 +91,22 @@ export function createWebSocketServer(
   server: HttpServer,
   dependencies: WebSocketServerDependencies
 ): WebSocketServer {
+  // `noServer` so upgrades can be offered to `claimUpgrade` first; ws would
+  // otherwise answer every upgrade on the server itself.
   const wss = new WebSocketServer({
-    server,
+    noServer: true,
     verifyClient: ((
       info: Parameters<VerifyClientCallbackSync<AuthenticatedWebSocketRequest>>[0]
     ) => verifyWebSocketClient(info, dependencies.verifyClient)),
+  });
+
+  server.on('upgrade', (request: IncomingMessage, socket: Duplex, head: Buffer) => {
+    if (dependencies.claimUpgrade?.(request, socket, head)) {
+      return;
+    }
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit('connection', ws, request);
+    });
   });
 
   wss.on('connection', (ws, request) => {
