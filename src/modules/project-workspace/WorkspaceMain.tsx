@@ -12,6 +12,7 @@ import type { AppTab, DirectoryRevealRequest, Project, ProjectSession, SessionEs
 import { useUiPreferences } from '@/shared/context/UiPreferencesContext';
 import { useFileOpenResolver } from '@/modules/project-workspace/hooks/useFileOpenResolver';
 import { EditorSidebar, useEditorSidebar } from '@/modules/code-editor';
+import { DevPreviewMenu, useDevServers } from '@/modules/dev-preview';
 import WorkspaceHeader from '@/modules/project-workspace/WorkspaceHeader';
 import WorkspaceStateView from '@/modules/project-workspace/WorkspaceStateView';
 import WorkspaceErrorBoundary from '@/modules/project-workspace/WorkspaceErrorBoundary';
@@ -81,6 +82,7 @@ function WorkspaceMain({
     resizeHandleRef,
     handleFileOpen,
     handleAgentFileEdit,
+    handleOpenDevPreview,
     handleCloseEditor,
     handleToggleEditorExpand,
     handleResizeStart,
@@ -89,6 +91,20 @@ function WorkspaceMain({
     selectedProject,
     isMobile,
   });
+
+  // A dev server that starts while the user works (usually one Claude just
+  // launched) opens beside the chat. Ephemeral high ports belong to tooling,
+  // not apps, so only the usual dev-server range auto-opens.
+  const autoOpenDevServer = useCallback((port: number) => {
+    if (followAgentEdits && !isMobile && port < 10000) {
+      handleOpenDevPreview(port, { automatic: true });
+    }
+  }, [followAgentEdits, handleOpenDevPreview, isMobile]);
+  const devPreviewStatus = useDevServers(autoOpenDevServer);
+
+  const openDevPreview = useCallback((port: number) => {
+    handleOpenDevPreview(port);
+  }, [handleOpenDevPreview]);
 
   // Resolves bare/partial file references (e.g. links inside chat messages) to
   // real project files before opening them in the in-app editor.
@@ -154,6 +170,13 @@ function WorkspaceMain({
         isMobile={isMobile}
         onMenuClick={onMenuClick}
         onRenameSession={onRenameSession}
+        devPreviewMenu={(
+          <DevPreviewMenu
+            status={devPreviewStatus}
+            activePort={editingFile?.devServerPort ?? null}
+            onOpenPreview={openDevPreview}
+          />
+        )}
       />
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
@@ -248,6 +271,8 @@ function WorkspaceMain({
           onUnsavedChangesChange={handleUnsavedChangesChange}
           projectPath={selectedProject.path}
           fillSpace={activeTab === 'files'}
+          devPreviewStatus={devPreviewStatus}
+          onOpenDevPreview={openDevPreview}
         />
       </div>
     </div>

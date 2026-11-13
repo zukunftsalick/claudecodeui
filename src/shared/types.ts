@@ -998,6 +998,8 @@ export type CodeEditorFile = {
   revision?: number;
   // Open Markdown/HTML in the rendered view rather than the source.
   preferPreview?: boolean;
+  // Set when the panel shows a running dev server instead of a file.
+  devServerPort?: number | null;
   [key: string]: unknown;
 };
 
@@ -1006,6 +1008,24 @@ export type CodeEditorGotoTarget = {
   // 1-based, clamped to the document by the editor surface.
   line: number;
 };
+
+//----------------- DEV SERVER PREVIEW ------------
+
+/** One server listening on the VPS that can be previewed, as listed by `/api/dev-preview/status`; shown in the header's preview menu and the preview panel's port picker. */
+export type DevServer = {
+  port: number;
+  // Short description of the owning process, such as "node vite", when known.
+  label: string | null;
+};
+
+/** What the server reports about dev-server previews: whether they are set up (`domain` is where `p<port>.<domain>` hosts live) and which servers are running now. */
+export type DevPreviewStatus = {
+  enabled: boolean;
+  domain: string | null;
+  servers: DevServer[];
+};
+
+// ---------------------------
 
 /** The category of browser-renderable media a file maps to, used by the code editor to decide whether to show an inline image, PDF, video or audio preview instead of a text buffer. */
 export type PreviewKind = 'image' | 'pdf' | 'video' | 'audio';

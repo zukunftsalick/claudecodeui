@@ -52,6 +52,7 @@ import browserUseRoutes from './modules/browser-use/browser-use.routes.js';
 import { assetsRoutes } from './modules/assets/index.js';
 import { fileTreeRoutes } from './modules/file-tree/index.js';
 import { worktreesRoutes } from './modules/worktrees/index.js';
+import { createDevPreviewGateway, createDevPreviewRouter } from './modules/dev-preview/index.js';
 import browserUseMcpRoutes from './modules/browser-use/browser-use-mcp.routes.js';
 import { browserUseService } from './modules/browser-use/browser-use.service.js';
 import { initializeDatabase, sessionsDb } from './modules/database/index.js';
@@ -84,6 +85,19 @@ console.log('SERVER_PORT from env:', process.env.SERVER_PORT);
 
 const app = express();
 const server = http.createServer(app);
+
+// Dev-server previews at p<port>.<DEV_PREVIEW_DOMAIN> (e.g. p5173.example.com).
+// Off unless DEV_PREVIEW_DOMAIN is set, because it needs a wildcard hostname
+// routed to this server. The gateway runs before every other route and gets
+// first look at WebSocket upgrades, so hot reload works through it.
+const DEV_PREVIEW_DOMAIN = process.env.DEV_PREVIEW_DOMAIN?.trim().replace(/^\.+|\.+$/g, '') || null;
+const DEV_PREVIEW_SERVER_PORT = Number.parseInt(process.env.SERVER_PORT || '3001', 10);
+const devPreviewGateway = createDevPreviewGateway({
+    domain: DEV_PREVIEW_DOMAIN,
+    serverPort: DEV_PREVIEW_SERVER_PORT,
+    authenticate: (token) => authenticateWebSocket(token),
+});
+app.use(devPreviewGateway.middleware);
 const queryClaude = providerRuntimeService.getRunner('claude');
 const queryCursor = providerRuntimeService.getRunner('cursor');
 const queryCodex = providerRuntimeService.getRunner('codex');
@@ -105,6 +119,7 @@ const agentRoutes = createAgentModule({
 chatRunRegistry.setRetentionGuard((sessionId) => providerRuntimeService.hasBackgroundWork(sessionId));
 
 createWebSocketServer(server, {
+    claimUpgrade: devPreviewGateway.handleUpgrade,
     verifyClient: {
         isPlatform: IS_PLATFORM,
         authenticateWebSocket,
@@ -157,6 +172,9 @@ app.use('/api/auth', authRoutes);
 
 // File Tree API Routes (protected)
 app.use('/api/file-tree', authenticateToken, fileTreeRoutes);
+
+// Lists dev servers that can be previewed (protected)
+app.use('/api/dev-preview', authenticateToken, createDevPreviewRouter({ domain: DEV_PREVIEW_DOMAIN, serverPort: DEV_PREVIEW_SERVER_PORT }));
 
 // Projects API Routes (protected)
 app.use('/api/projects', authenticateToken, projectModuleRoutes);

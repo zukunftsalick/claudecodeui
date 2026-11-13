@@ -613,6 +613,10 @@ export const api = {
       ),
   },
 
+  devPreview: {
+    status: () => get('/api/dev-preview/status'),
+  },
+
   browserUse: {
     status: () => get('/api/browser-use/status'),
     settings: () => get('/api/browser-use/settings'),
