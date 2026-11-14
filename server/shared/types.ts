@@ -1882,3 +1882,16 @@ export type ProjectThreadsOverview = {
   /** How many threads may run at the same time before new work waits. */
   maxRunningThreads: number;
 };
+
+/**
+ * The session a threads tool call or turn belongs to. Built from a provider's
+ * turn input by the threads service (`readSessionContext`); `projectPath` falls
+ * back to the turn's `cwd`, and `runOptions` are the composer options of the
+ * turn (model, effort, permission mode, tool settings), which threads inherit.
+ */
+export type ThreadSessionContext = {
+  sessionId: string;
+  userId: number | null;
+  projectPath: string;
+  runOptions: AnyRecord;
+};

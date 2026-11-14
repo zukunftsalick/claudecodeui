@@ -20,7 +20,7 @@ type WorkspaceHeaderProps = {
   onMenuClick: () => void;
   /** Persists a new title for a session; resolves false when the backend refuses it. */
   onRenameSession: (sessionId: string, summary: string) => Promise<boolean>;
-  // The dev-server preview menu, shown at the end of the tab bar.
+  // The threads button and dev-server preview menu, shown at the end of the tab bar.
   devPreviewMenu?: ReactNode;
 };
 

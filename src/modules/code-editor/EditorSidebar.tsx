@@ -1,8 +1,9 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import type { MouseEvent, MutableRefObject } from 'react';
 
-import type { CodeEditorFile, DevPreviewStatus } from '@/shared/types';
+import type { CodeEditorFile, DevPreviewStatus, ProjectThreadsOverview } from '@/shared/types';
 import { DevPreviewPanel } from '@/modules/dev-preview';
+import { ThreadsPanel } from '@/modules/threads';
 import CodeEditor from '@/modules/code-editor/CodeEditor';
 
 type EditorSidebarProps = {
@@ -23,6 +24,11 @@ type EditorSidebarProps = {
   // Running dev servers, for the panel when it shows a preview instead of a file.
   devPreviewStatus?: DevPreviewStatus | null;
   onOpenDevPreview?: (port: number) => void;
+  // The project's threads, for the panel when it shows the threads pane.
+  threadsOverview?: ProjectThreadsOverview | null;
+  activeSessionId?: string | null;
+  onRefreshThreads?: () => void;
+  onOpenThreadSession?: (sessionId: string) => void;
 };
 
 // Minimum width for the left content (file tree, chat, etc.)
@@ -30,7 +36,7 @@ const MIN_LEFT_CONTENT_WIDTH = 200;
 // Minimum width for the editor sidebar
 const MIN_EDITOR_WIDTH = 280;
 
-/** Used by the project-workspace module to dock the code editor, or a dev-server preview, beside the workspace content, with drag-to-resize and pop-out behaviour. */
+/** Used by the project-workspace module to dock the code editor, a dev-server preview or the threads pane beside the workspace content, with drag-to-resize and pop-out behaviour. */
 export default function EditorSidebar({
   editingFile,
   isMobile,
@@ -46,6 +52,10 @@ export default function EditorSidebar({
   fillSpace,
   devPreviewStatus = null,
   onOpenDevPreview,
+  threadsOverview = null,
+  activeSessionId = null,
+  onRefreshThreads,
+  onOpenThreadSession,
 }: EditorSidebarProps) {
   const [poppedOut, setPoppedOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -142,7 +152,23 @@ export default function EditorSidebar({
           : `h-full overflow-hidden border-l border-gray-200 dark:border-gray-700 ${useFlexLayout ? 'min-w-0 flex-1' : ''}`}
         style={isFloating || useFlexLayout ? undefined : { width: `${effectiveWidth}px`, minWidth: `${MIN_EDITOR_WIDTH}px` }}
       >
-        {editingFile.devServerPort ? (
+        {editingFile.threadsPane ? (
+          <ThreadsPanel
+            projectPath={projectPath ?? ''}
+            overview={threadsOverview}
+            activeSessionId={activeSessionId}
+            isSidebar={!isFloating}
+            isExpanded={!isFloating && editorExpanded}
+            onRefresh={() => onRefreshThreads?.()}
+            onOpenSession={(sessionId) => {
+              // Covering the screen on phones: get out of the way of the chat it opens.
+              if (isFloating) handleClose();
+              onOpenThreadSession?.(sessionId);
+            }}
+            onToggleExpand={isFloating ? null : onToggleEditorExpand}
+            onClose={handleClose}
+          />
+        ) : editingFile.devServerPort ? (
           <DevPreviewPanel
             port={editingFile.devServerPort}
             status={devPreviewStatus}

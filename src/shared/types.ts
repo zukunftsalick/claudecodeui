@@ -1000,6 +1000,8 @@ export type CodeEditorFile = {
   preferPreview?: boolean;
   // Set when the panel shows a running dev server instead of a file.
   devServerPort?: number | null;
+  // Set when the panel shows the project's threads pane instead of a file.
+  threadsPane?: boolean;
   [key: string]: unknown;
 };
 
@@ -1093,6 +1095,41 @@ export type DevPreviewStatus = {
   enabled: boolean;
   domain: string | null;
   servers: DevServer[];
+};
+
+// ---------------------------
+
+//----------------- PROJECT THREADS ------------
+
+/** Where a project chat or thread stands, as `/api/threads` reports it; drives the status chip on each card in the threads pane. */
+export type AgentThreadStatus = 'working' | 'waiting' | 'idle' | 'done' | 'failed';
+
+/** One card in the threads pane: the project chat (coordinator) or one of the threads it started. Mirrors the server's `AgentThreadSummary`. */
+export type AgentThreadSummary = {
+  sessionId: string;
+  role: 'coordinator' | 'thread';
+  title: string;
+  status: AgentThreadStatus;
+  // Why it is waiting, what it finished, or what failed.
+  statusNote: string | null;
+  // The last thing it said at the end of a turn, trimmed by the server.
+  lastReply: string | null;
+  folder: string;
+  coordinatorSessionId: string | null;
+  // Messages from other chats it has not taken in yet.
+  queuedMessages: number;
+  // SQLite timestamp (UTC, "YYYY-MM-DD HH:MM:SS").
+  updatedAt: string;
+};
+
+/** Everything the threads pane shows for one project, polled from `/api/threads`; also feeds the header button's waiting badge. */
+export type ProjectThreadsOverview = {
+  projectPath: string;
+  coordinator: AgentThreadSummary | null;
+  threads: AgentThreadSummary[];
+  // Folders outside the project its chats may use.
+  folders: string[];
+  maxRunningThreads: number;
 };
 
 // ---------------------------

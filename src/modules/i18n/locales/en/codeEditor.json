@@ -61,5 +61,23 @@
     "notConfigured": "Dev server previews are not set up on this server yet. Set DEV_PREVIEW_DOMAIN and route *.<domain> to CloudCLI.",
     "stopped": "Nothing is listening on port {{port}} right now.",
     "frameTitle": "Preview of port {{port}}"
+  },
+  "threads": {
+    "menuLabel": "Threads",
+    "menuTitle": "Project chat and threads",
+    "waitingBadge": "{{count}} waiting for you",
+    "title": "Project chat and threads",
+    "loading": "Loading threads...",
+    "projectChat": "Project chat",
+    "newProjectChat": "New project chat",
+    "noProjectChat": "No project chat yet. Start one, or ask any chat in this project to start a thread and it becomes the project chat.",
+    "threads": "Threads",
+    "running": "({{running}} running, up to {{max}} at once)",
+    "none": "No threads yet. Ask the project chat to split work into threads.",
+    "folders": "Allowed folders",
+    "foldersHelp": "Folders outside the project that its chats and threads may use.",
+    "removeFolder": "Remove",
+    "folderInput": "Folder to allow",
+    "allowFolder": "Allow"
   }
 }

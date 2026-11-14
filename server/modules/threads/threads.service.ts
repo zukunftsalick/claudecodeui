@@ -10,6 +10,7 @@ import type {
   AnyRecord,
   NormalizedMessage,
   ProjectThreadsOverview,
+  ThreadSessionContext,
 } from '@/shared/types.js';
 
 /** The longest reply kept on a card or relayed to the project chat. */
@@ -33,13 +34,6 @@ type ThreadsServiceDependencies = {
   getSessionFolder(sessionId: string): string | null;
   notifyWaiting(input: { userId: number | null; sessionId: string; title: string; note: string }): void;
   maxRunningThreads: number;
-};
-
-type SessionContext = {
-  sessionId: string;
-  userId: number | null;
-  projectPath: string;
-  runOptions: AnyRecord;
 };
 
 /** Thrown for a request the caller got wrong; the tools return its message to Claude. */
@@ -176,7 +170,7 @@ export function createThreadsService(dependencies: ThreadsServiceDependencies) {
 
   const service = {
     /** Makes a chat the project chat of its project (idempotent) and returns its row. */
-    ensureCoordinator(context: SessionContext): AgentThreadRow {
+    ensureCoordinator(context: ThreadSessionContext): AgentThreadRow {
       const existing = agentThreadsDb.get(context.sessionId);
       if (existing) return existing;
       return agentThreadsDb.upsert({
@@ -206,7 +200,7 @@ export function createThreadsService(dependencies: ThreadsServiceDependencies) {
     },
 
     /** Called at the start of every turn of a session that takes part, before its tools are built. */
-    noteTurnStarted(context: SessionContext): AgentThreadRow | null {
+    noteTurnStarted(context: ThreadSessionContext): AgentThreadRow | null {
       const row = agentThreadsDb.get(context.sessionId);
       if (!row) return null;
       reportedThisTurn.delete(context.sessionId);
@@ -228,7 +222,7 @@ export function createThreadsService(dependencies: ThreadsServiceDependencies) {
       return agentThreadsDb.get(context.sessionId);
     },
 
-    async startThread(context: SessionContext, input: { title: string; instructions: string; folder?: string }): Promise<AgentThreadSummary> {
+    async startThread(context: ThreadSessionContext, input: { title: string; instructions: string; folder?: string }): Promise<AgentThreadSummary> {
       const title = input.title.trim().slice(0, 80);
       const instructions = input.instructions.trim();
       if (!title) throw new ThreadsError('A thread needs a title.');
@@ -431,7 +425,7 @@ export function createThreadsService(dependencies: ThreadsServiceDependencies) {
 export type ThreadsService = ReturnType<typeof createThreadsService>;
 
 /** Turns the session context a tool call needs out of a provider's turn input. Exported for the session tools. */
-export function readSessionContext(input: { sessionId: string | null; userId: string | number | null; projectPath: string | undefined; cwd: string | undefined; runOptions: AnyRecord }): SessionContext | null {
+export function readSessionContext(input: { sessionId: string | null; userId: string | number | null; projectPath: string | undefined; cwd: string | undefined; runOptions: AnyRecord }): ThreadSessionContext | null {
   const projectPath = input.projectPath || input.cwd;
   if (!input.sessionId || !projectPath) return null;
   return { sessionId: input.sessionId, userId: readUserId(input.userId), projectPath, runOptions: input.runOptions };
