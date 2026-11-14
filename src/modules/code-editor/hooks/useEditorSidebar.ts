@@ -91,8 +91,9 @@ export const useEditorSidebar = ({
 
       const openFile = editingFileRef.current;
       // A live dev-server preview already shows the result of the edit (hot
-      // reload), so it stays put instead of switching to the source file.
-      if (openFile?.devServerPort) {
+      // reload), so it stays put instead of switching to the source file. The
+      // threads pane is something the user opened on purpose, so it stays too.
+      if (openFile?.devServerPort || openFile?.threadsPane) {
         return;
       }
       const isSameFile = openFile !== null
@@ -151,6 +152,29 @@ export const useEditorSidebar = ({
     },
     [selectedProject?.projectId, t],
   );
+
+  // Shows the project's threads pane in the panel, or closes it when it is
+  // already showing (the header button toggles). Asks before replacing unsaved
+  // edits, like opening a file does.
+  const handleToggleThreadsPane = useCallback((): boolean => {
+    if (editingFileRef.current?.threadsPane) {
+      setEditingFile(null);
+      setEditorExpanded(false);
+      return false;
+    }
+    if (hasUnsavedChangesRef.current && !window.confirm(t('unsavedChanges.confirmClose'))) {
+      return false;
+    }
+    setEditingFile({
+      name: 'Threads',
+      path: 'threads:',
+      projectId: selectedProject?.projectId,
+      diffInfo: null,
+      line: null,
+      threadsPane: true,
+    });
+    return true;
+  }, [selectedProject?.projectId, t]);
 
   const handleCloseEditor = useCallback(() => {
     setEditingFile(null);
@@ -250,6 +274,7 @@ export const useEditorSidebar = ({
     handleFileOpen,
     handleAgentFileEdit,
     handleOpenDevPreview,
+    handleToggleThreadsPane,
     handleCloseEditor,
     handleToggleEditorExpand,
     handleResizeStart,

@@ -13,6 +13,7 @@ import { useUiPreferences } from '@/shared/context/UiPreferencesContext';
 import { useFileOpenResolver } from '@/modules/project-workspace/hooks/useFileOpenResolver';
 import { EditorSidebar, useEditorSidebar } from '@/modules/code-editor';
 import { DevPreviewMenu, useDevServers } from '@/modules/dev-preview';
+import { ThreadsMenuButton, useProjectThreads } from '@/modules/threads';
 import { XcodeCloudPanel } from '@/modules/xcode-cloud';
 import WorkspaceHeader from '@/modules/project-workspace/WorkspaceHeader';
 import WorkspaceStateView from '@/modules/project-workspace/WorkspaceStateView';
@@ -84,6 +85,7 @@ function WorkspaceMain({
     handleFileOpen,
     handleAgentFileEdit,
     handleOpenDevPreview,
+    handleToggleThreadsPane,
     handleCloseEditor,
     handleToggleEditorExpand,
     handleResizeStart,
@@ -106,6 +108,12 @@ function WorkspaceMain({
   const openDevPreview = useCallback((port: number) => {
     handleOpenDevPreview(port);
   }, [handleOpenDevPreview]);
+
+  const projectThreads = useProjectThreads(selectedProject?.path ?? null);
+  const openThreadSession = useCallback((sessionId: string) => {
+    setActiveTab('chat');
+    onNavigateToSession(sessionId);
+  }, [onNavigateToSession, setActiveTab]);
 
   // Resolves bare/partial file references (e.g. links inside chat messages) to
   // real project files before opening them in the in-app editor.
@@ -172,11 +180,18 @@ function WorkspaceMain({
         onMenuClick={onMenuClick}
         onRenameSession={onRenameSession}
         devPreviewMenu={(
-          <DevPreviewMenu
-            status={devPreviewStatus}
-            activePort={editingFile?.devServerPort ?? null}
-            onOpenPreview={openDevPreview}
-          />
+          <div className="flex items-center gap-1">
+            <ThreadsMenuButton
+              isOpen={Boolean(editingFile?.threadsPane)}
+              waitingCount={projectThreads.waitingCount}
+              onToggle={handleToggleThreadsPane}
+            />
+            <DevPreviewMenu
+              status={devPreviewStatus}
+              activePort={editingFile?.devServerPort ?? null}
+              onOpenPreview={openDevPreview}
+            />
+          </div>
         )}
       />
 
@@ -280,6 +295,10 @@ function WorkspaceMain({
           fillSpace={activeTab === 'files'}
           devPreviewStatus={devPreviewStatus}
           onOpenDevPreview={openDevPreview}
+          threadsOverview={projectThreads.overview}
+          activeSessionId={selectedSession?.id ?? null}
+          onRefreshThreads={projectThreads.refresh}
+          onOpenThreadSession={openThreadSession}
         />
       </div>
     </div>

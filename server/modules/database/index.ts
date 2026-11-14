@@ -1,5 +1,13 @@
 export { initializeDatabase } from '@/modules/database/init-db.js';
 export { closeConnection, getConnection, getDatabasePath } from '@/modules/database/connection.js';
+// agentThreadsDb: used by the threads module for project chats, their threads, messages and folder grants.
+export { agentThreadsDb } from '@/modules/database/repositories/agent-threads.db.js';
+export type {
+  AgentThreadMessageRow,
+  AgentThreadRole,
+  AgentThreadRow,
+  AgentThreadStoredStatus,
+} from '@/modules/database/repositories/agent-threads.db.js';
 export { apiKeysDb } from '@/modules/database/repositories/api-keys.js';
 export { appConfigDb } from '@/modules/database/repositories/app-config.js';
 export { credentialsDb } from '@/modules/database/repositories/credentials.js';

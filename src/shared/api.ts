@@ -627,6 +627,16 @@ export const api = {
     status: () => get('/api/dev-preview/status'),
   },
 
+  // Project chats, their threads and the folders a project may reach (threads pane).
+  threads: {
+    overview: (projectPath: string) => get(`/api/threads${query({ projectPath })}`),
+    createProjectChat: (projectPath: string) => post('/api/threads/project-chat', { projectPath }),
+    update: (sessionId: string, body: { status?: 'idle' | 'waiting' | 'done' | 'failed'; title?: string; note?: string }) =>
+      patch(`/api/threads/${encodeURIComponent(sessionId)}`, body),
+    allowFolder: (projectPath: string, folder: string) => post('/api/threads/folders', { projectPath, folder }),
+    removeFolder: (projectPath: string, folder: string) => del('/api/threads/folders', { projectPath, folder }),
+  },
+
   browserUse: {
     status: () => get('/api/browser-use/status'),
     settings: () => get('/api/browser-use/settings'),

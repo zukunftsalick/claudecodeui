@@ -120,6 +120,58 @@ CREATE TABLE IF NOT EXISTS scheduled_messages (
 );
 `;
 
+// Project chats (coordinators) and the threads they start. One row per app
+// session that takes part; a plain chat has none. `status` holds what the run
+// itself cannot tell: whether a thread is waiting for the user, done or failed.
+// Whether it is working right now always comes from the live run registry.
+export const AGENT_THREADS_TABLE_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS agent_threads (
+    session_id TEXT PRIMARY KEY,
+    -- coordinator | thread
+    role TEXT NOT NULL,
+    user_id INTEGER,
+    project_path TEXT NOT NULL,
+    -- The project chat that started this thread; NULL for a coordinator.
+    coordinator_session_id TEXT,
+    title TEXT NOT NULL,
+    -- idle | waiting | done | failed
+    status TEXT NOT NULL DEFAULT 'idle',
+    status_note TEXT,
+    -- The last thing the session said at the end of a turn, for cards and relays.
+    last_reply TEXT,
+    -- Composer options (model, permission mode, tool settings) new turns run with.
+    run_options TEXT NOT NULL DEFAULT '{}',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES sessions(session_id) ON DELETE CASCADE
+);
+`;
+
+// Messages between a project chat and its threads, kept until the receiving
+// session is free to take them as a turn.
+export const AGENT_THREAD_MESSAGES_TABLE_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS agent_thread_messages (
+    id TEXT PRIMARY KEY,
+    to_session_id TEXT NOT NULL,
+    from_session_id TEXT,
+    from_label TEXT NOT NULL,
+    body TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    delivered_at DATETIME,
+    FOREIGN KEY (to_session_id) REFERENCES sessions(session_id) ON DELETE CASCADE
+);
+`;
+
+// Folders outside a project that the user let Claude reach from that project's chats.
+export const PROJECT_FOLDER_GRANTS_TABLE_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS project_folder_grants (
+    project_path TEXT NOT NULL,
+    folder_path TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (project_path, folder_path)
+);
+`;
+
 export const SESSIONS_TABLE_SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS sessions (
     session_id TEXT NOT NULL,

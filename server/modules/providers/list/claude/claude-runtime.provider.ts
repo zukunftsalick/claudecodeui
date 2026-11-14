@@ -39,6 +39,7 @@ import {
   notifyUserIfEnabled
 } from '@/modules/notifications/index.js';
 import { sessionHistoryCache } from '@/modules/providers/services/session-history-cache.service.js';
+import { sessionRuntimeExtrasService } from '@/modules/providers/services/session-runtime-extras.service.js';
 import {
   getReportedClaudeContextWindow,
   rememberClaudeContextWindow
@@ -1332,6 +1333,29 @@ async function queryClaudeSDK(
       sdkOptions.mcpServers = mcpServers;
     }
 
+    // Tools and folders other modules add to this session's turns (threads:
+    // the project-chat tools and the folders the user let this project reach).
+    const sessionExtras = sessionRuntimeExtrasService.collect({
+      provider: 'claude',
+      sessionId: sessionId || null,
+      userId: ws?.userId ?? null,
+      cwd: options.cwd,
+      projectPath: options.projectPath,
+      runOptions: options,
+    });
+    if (Object.keys(sessionExtras.mcpServers).length > 0) {
+      sdkOptions.mcpServers = { ...(sdkOptions.mcpServers || {}), ...sessionExtras.mcpServers };
+    }
+    if (sessionExtras.allowedTools.length > 0) {
+      sdkOptions.allowedTools = [...new Set([...(sdkOptions.allowedTools || []), ...sessionExtras.allowedTools])];
+    }
+    if (sessionExtras.additionalDirectories.length > 0) {
+      sdkOptions.additionalDirectories = [...new Set([...(sdkOptions.additionalDirectories || []), ...sessionExtras.additionalDirectories])];
+    }
+    // A thread may run with nobody watching, so its prompts wait for the user
+    // (it shows as waiting for you) instead of timing out into a denial.
+    const permissionTimeoutMs = sessionExtras.waitForApprovalIndefinitely ? 0 : undefined;
+
     // Makes the CLI echo each message it reads from stdin, at the moment it
     // reads it. For a steered message that echo is the only word on when — and
     // whether — Claude actually took it in; the run loop below drops every
@@ -1466,7 +1490,7 @@ async function queryClaudeSDK(
       }));
 
       const decision = await waitForToolApproval(requestId, {
-        timeoutMs: requiresInteraction ? 0 : undefined,
+        timeoutMs: requiresInteraction ? 0 : permissionTimeoutMs,
         signal: context?.signal,
         metadata: {
           // Keyed by the app session id so `chat.subscribe` can look pending
