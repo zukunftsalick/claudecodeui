@@ -24,6 +24,10 @@ export function ThreadsMenuButton({ isOpen, waitingCount, onToggle }: ThreadsMen
           : 'text-muted-foreground hover:bg-accent hover:text-foreground',
       )}
       title={t('threads.menuTitle', 'Project chat and threads')}
+      // On phones only the icon and badge show, so name the button explicitly.
+      aria-label={waitingCount > 0
+        ? `${t('threads.menuLabel', 'Threads')}, ${t('threads.waitingBadge', '{{count}} waiting for you', { count: waitingCount })}`
+        : t('threads.menuLabel', 'Threads')}
       aria-pressed={isOpen}
     >
       <Network className="h-4 w-4" />
