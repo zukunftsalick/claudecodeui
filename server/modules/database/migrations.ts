@@ -1,9 +1,12 @@
 import { Database } from 'better-sqlite3';
 
 import {
+  AGENT_THREAD_MESSAGES_TABLE_SCHEMA_SQL,
+  AGENT_THREADS_TABLE_SCHEMA_SQL,
   APP_CONFIG_TABLE_SCHEMA_SQL,
   LAST_SCANNED_AT_SQL,
   NOTIFICATION_CHANNEL_ENDPOINTS_TABLE_SCHEMA_SQL,
+  PROJECT_FOLDER_GRANTS_TABLE_SCHEMA_SQL,
   PROJECTS_TABLE_SCHEMA_SQL,
   PROVIDER_MODELS_TABLE_SCHEMA_SQL,
   PUSH_SUBSCRIPTIONS_TABLE_SCHEMA_SQL,
@@ -535,6 +538,9 @@ export const runMigrations = (db: Database) => {
     addForkedFromSessionIdColumn(db);
     ensureProjectsForSessionPaths(db);
     db.exec(SCHEDULED_MESSAGES_TABLE_SCHEMA_SQL);
+    db.exec(AGENT_THREADS_TABLE_SCHEMA_SQL);
+    db.exec(AGENT_THREAD_MESSAGES_TABLE_SCHEMA_SQL);
+    db.exec(PROJECT_FOLDER_GRANTS_TABLE_SCHEMA_SQL);
 
     db.exec('CREATE INDEX IF NOT EXISTS idx_session_ids_lookup ON sessions(session_id)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_sessions_provider_session_id ON sessions(provider_session_id)');
@@ -543,6 +549,8 @@ export const runMigrations = (db: Database) => {
     // The due-message poll runs on a timer; without this it table-scans.
     db.exec('CREATE INDEX IF NOT EXISTS idx_scheduled_messages_due ON scheduled_messages(status, scheduled_for)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_scheduled_messages_session ON scheduled_messages(session_id)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_agent_threads_project ON agent_threads(project_path)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_agent_thread_messages_pending ON agent_thread_messages(to_session_id, delivered_at)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_sessions_is_archived ON sessions(isArchived)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_projects_is_starred ON projects(isStarred)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_projects_is_archived ON projects(isArchived)');

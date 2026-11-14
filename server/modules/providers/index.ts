@@ -27,3 +27,7 @@ export {
   MAX_SIDE_QUESTIONS_PER_SESSION,
   sideQuestionsService,
 } from './services/side-questions.service.js';
+
+// sessionRuntimeExtrasService: the threads module registers per-session tools and
+// folder grants here; the Claude runtime collects them for each turn.
+export { sessionRuntimeExtrasService } from './services/session-runtime-extras.service.js';

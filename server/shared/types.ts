@@ -1799,3 +1799,86 @@ export type CliApplication = {
 export type SandboxCommandService = {
   execute(argumentsList: string[]): Promise<number>;
 };
+
+// ---------------------------
+
+//----------------- SESSION RUNTIME EXTRAS ------------
+
+/**
+ * What a provider runtime knows about a turn it is about to start, handed to
+ * every registered extras contributor (see `SessionRuntimeExtrasContributor`).
+ * `sessionId` is the stable app session id; `runOptions` are the composer
+ * options the turn was sent with (model, permission mode, tool settings).
+ */
+export type SessionRuntimeExtrasInput = {
+  provider: LLMProvider;
+  sessionId: string | null;
+  userId: string | number | null;
+  cwd: string | undefined;
+  projectPath: string | undefined;
+  runOptions: AnyRecord;
+};
+
+/**
+ * Additions a contributor makes to one turn of a session.
+ *
+ * - `mcpServers`: extra MCP servers by name. For Claude these may be in-process
+ *   SDK servers (`createSdkMcpServer`), so their tools know which session calls them.
+ * - `allowedTools`: tool names that run without a permission prompt.
+ * - `additionalDirectories`: absolute folders outside `cwd` the session may use.
+ * - `waitForApprovalIndefinitely`: permission prompts wait for the user instead
+ *   of timing out, for runs nobody may be watching (threads).
+ */
+export type SessionRuntimeExtras = {
+  mcpServers: Record<string, unknown>;
+  allowedTools: string[];
+  additionalDirectories: string[];
+  waitForApprovalIndefinitely: boolean;
+};
+
+/**
+ * Registered by a feature module (today: threads) to add tools or folders to
+ * provider turns without the providers module importing that feature.
+ * Must not throw; return null to add nothing.
+ */
+export type SessionRuntimeExtrasContributor = (input: SessionRuntimeExtrasInput) => Partial<SessionRuntimeExtras> | null;
+
+// ---------------------------
+
+//----------------- PROJECT THREADS ------------
+
+/**
+ * Where a project chat or thread stands, as the threads pane shows it.
+ * `working` and the approval case of `waiting` come from the live run; the
+ * rest are what the session last recorded (see the threads module).
+ */
+export type AgentThreadStatus = 'working' | 'waiting' | 'idle' | 'done' | 'failed';
+
+/** One card in the threads pane: a project chat (coordinator) or one of its threads. */
+export type AgentThreadSummary = {
+  sessionId: string;
+  role: 'coordinator' | 'thread';
+  title: string;
+  status: AgentThreadStatus;
+  /** Why it is waiting, what it finished, or what failed; null when there is nothing to say. */
+  statusNote: string | null;
+  /** The last thing it said at the end of a turn, trimmed. */
+  lastReply: string | null;
+  /** The folder the session works in (may differ from the project for a thread). */
+  folder: string;
+  coordinatorSessionId: string | null;
+  /** Messages from other sessions it has not taken in yet. */
+  queuedMessages: number;
+  updatedAt: string;
+};
+
+/** Everything the threads pane needs for one project. */
+export type ProjectThreadsOverview = {
+  projectPath: string;
+  coordinator: AgentThreadSummary | null;
+  threads: AgentThreadSummary[];
+  /** Folders outside the project that its chats may use. */
+  folders: string[];
+  /** How many threads may run at the same time before new work waits. */
+  maxRunningThreads: number;
+};
