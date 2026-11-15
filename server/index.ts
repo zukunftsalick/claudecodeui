@@ -55,6 +55,7 @@ import { worktreesRoutes } from './modules/worktrees/index.js';
 import { createDevPreviewGateway, createDevPreviewRouter } from './modules/dev-preview/index.js';
 import { createDefaultXcodeCloudService, createXcodeCloudRouter } from './modules/xcode-cloud/index.js';
 import { closeThreads, createThreadsRouter, initializeThreads, threadsService } from './modules/threads/index.js';
+import { closeSchedules, createSchedulesRouter, initializeSchedules, schedulesService } from './modules/schedules/index.js';
 import browserUseMcpRoutes from './modules/browser-use/browser-use-mcp.routes.js';
 import { browserUseService } from './modules/browser-use/browser-use.service.js';
 import { initializeDatabase, sessionsDb } from './modules/database/index.js';
@@ -223,6 +224,8 @@ app.use('/api/providers', authenticateToken, providerRoutes);
 app.use('/api/scheduled-messages', authenticateToken, scheduledMessagesRoutes);
 // Project chats, their threads and the folders a project may reach (threads pane)
 app.use('/api/threads', authenticateToken, createThreadsRouter(threadsService));
+// Scheduled Claude tasks and their runs (Schedules tab)
+app.use('/api/schedules', authenticateToken, createSchedulesRouter(schedulesService));
 
 // Agent API Routes (uses API key authentication)
 app.use('/api/agent', agentRoutes);
@@ -412,6 +415,8 @@ async function startServer() {
             initializeScheduledMessageDispatcher(providerRuntimeService);
             // Thread tools on Claude turns, and delivery of messages between chats.
             initializeThreads();
+            // Starts scheduled tasks when they come due.
+            initializeSchedules();
 
             // Start server-side plugin processes for enabled plugins
             startEnabledPluginServers().catch(err => {
@@ -422,6 +427,7 @@ async function startServer() {
         await closeSessionsWatcher();
         closeScheduledMessageDispatcher();
         closeThreads();
+        closeSchedules();
         // Clean up plugin processes on shutdown
         const shutdownRuntimeServices = async () => {
             try {

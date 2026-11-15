@@ -172,6 +172,51 @@ CREATE TABLE IF NOT EXISTS project_folder_grants (
 );
 `;
 
+// Recurring or one-off Claude tasks the server starts on a timer (Schedules tab).
+// Each run is a new app session in `project_path`, so it shows up as a chat.
+export const SCHEDULED_TASKS_TABLE_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS scheduled_tasks (
+    id TEXT PRIMARY KEY,
+    user_id INTEGER,
+    name TEXT NOT NULL,
+    prompt TEXT NOT NULL,
+    project_path TEXT NOT NULL,
+    -- Five-field cron, read in \`timezone\`. NULL for a one-off task.
+    cron_expression TEXT,
+    timezone TEXT NOT NULL DEFAULT 'UTC',
+    -- UTC instant for a one-off task. NULL for a recurring one.
+    run_once_at DATETIME,
+    enabled INTEGER NOT NULL DEFAULT 1,
+    -- Composer options new runs start with (model, permission mode).
+    run_options TEXT NOT NULL DEFAULT '{}',
+    -- UTC. The next time the runner starts it; NULL when nothing is due (paused or a fired one-off).
+    next_run_at DATETIME,
+    -- Where an imported task came from (for example a claude.ai scheduled task id), so a re-import does not duplicate it.
+    source_id TEXT UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
+// One row per time a scheduled task ran, newest shown first in its history.
+export const SCHEDULED_TASK_RUNS_TABLE_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS scheduled_task_runs (
+    id TEXT PRIMARY KEY,
+    task_id TEXT NOT NULL,
+    session_id TEXT,
+    -- schedule | manual
+    trigger TEXT NOT NULL,
+    -- running | succeeded | failed | skipped
+    status TEXT NOT NULL,
+    error TEXT,
+    -- The last thing Claude said, used for the notification and the history row.
+    last_reply TEXT,
+    started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    finished_at DATETIME,
+    FOREIGN KEY (task_id) REFERENCES scheduled_tasks(id) ON DELETE CASCADE
+);
+`;
+
 export const SESSIONS_TABLE_SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS sessions (
     session_id TEXT NOT NULL,

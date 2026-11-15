@@ -5,6 +5,7 @@ import {
 } from '@/shared/authToken';
 import { IS_PLATFORM } from '@/shared/utils';
 import { readVoiceConfig, voiceConfigHeaders } from '@/shared/voiceConfig';
+import type { ScheduledTaskDraft } from '@/shared/types';
 
 // Headers are a plain record rather than the full `HeadersInit` union so the
 // defaults below can be merged with a caller's headers by spreading.
@@ -625,6 +626,18 @@ export const api = {
 
   devPreview: {
     status: () => get('/api/dev-preview/status'),
+  },
+
+  // Scheduled Claude tasks and their runs (Schedules tab).
+  schedules: {
+    list: () => get('/api/schedules'),
+    create: (body: ScheduledTaskDraft) => post('/api/schedules', body),
+    update: (id: string, body: ScheduledTaskDraft) => put(`/api/schedules/${encodeURIComponent(id)}`, body),
+    setEnabled: (id: string, enabled: boolean) => patch(`/api/schedules/${encodeURIComponent(id)}`, { enabled }),
+    remove: (id: string) => del(`/api/schedules/${encodeURIComponent(id)}`),
+    runs: (id: string) => get(`/api/schedules/${encodeURIComponent(id)}/runs`),
+    runNow: (id: string) => post(`/api/schedules/${encodeURIComponent(id)}/run`, {}),
+    importTasks: (projectPath: string, data: unknown) => post('/api/schedules/import', { projectPath, data }),
   },
 
   // Project chats, their threads and the folders a project may reach (threads pane).

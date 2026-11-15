@@ -13,6 +13,8 @@ import {
   SESSION_DRAFTS_TABLE_SCHEMA_SQL,
   SUPERSEDED_PROVIDER_SESSIONS_TABLE_SCHEMA_SQL,
   SCHEDULED_MESSAGES_TABLE_SCHEMA_SQL,
+  SCHEDULED_TASK_RUNS_TABLE_SCHEMA_SQL,
+  SCHEDULED_TASKS_TABLE_SCHEMA_SQL,
   SESSIONS_TABLE_SCHEMA_SQL,
   USER_PREFERENCES_TABLE_SCHEMA_SQL,
   USER_NOTIFICATION_PREFERENCES_TABLE_SCHEMA_SQL,
@@ -541,6 +543,8 @@ export const runMigrations = (db: Database) => {
     db.exec(AGENT_THREADS_TABLE_SCHEMA_SQL);
     db.exec(AGENT_THREAD_MESSAGES_TABLE_SCHEMA_SQL);
     db.exec(PROJECT_FOLDER_GRANTS_TABLE_SCHEMA_SQL);
+    db.exec(SCHEDULED_TASKS_TABLE_SCHEMA_SQL);
+    db.exec(SCHEDULED_TASK_RUNS_TABLE_SCHEMA_SQL);
 
     db.exec('CREATE INDEX IF NOT EXISTS idx_session_ids_lookup ON sessions(session_id)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_sessions_provider_session_id ON sessions(provider_session_id)');
@@ -550,6 +554,9 @@ export const runMigrations = (db: Database) => {
     db.exec('CREATE INDEX IF NOT EXISTS idx_scheduled_messages_due ON scheduled_messages(status, scheduled_for)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_scheduled_messages_session ON scheduled_messages(session_id)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_agent_threads_project ON agent_threads(project_path)');
+    // The schedules runner polls for due tasks on a timer.
+    db.exec('CREATE INDEX IF NOT EXISTS idx_scheduled_tasks_due ON scheduled_tasks(enabled, next_run_at)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_scheduled_task_runs_task ON scheduled_task_runs(task_id, started_at)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_agent_thread_messages_pending ON agent_thread_messages(to_session_id, delivered_at)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_sessions_is_archived ON sessions(isArchived)');
     db.exec('CREATE INDEX IF NOT EXISTS idx_projects_is_starred ON projects(isStarred)');

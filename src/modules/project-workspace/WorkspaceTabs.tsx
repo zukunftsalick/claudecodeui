@@ -1,4 +1,4 @@
-import { MessageSquare, Terminal, Folder, GitBranch, ClipboardCheck, Hammer, MonitorPlay, type LucideIcon } from 'lucide-react';
+import { MessageSquare, Terminal, Folder, GitBranch, ClipboardCheck, Hammer, MonitorPlay, CalendarClock, type LucideIcon } from 'lucide-react';
 import { Fragment } from 'react';
 import type { Dispatch, KeyboardEvent, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -53,6 +53,14 @@ const BUILDS_TAB: BuiltInTab = {
   icon: Hammer,
 };
 
+// Scheduled Claude tasks that the server runs on a timer.
+const SCHEDULES_TAB: BuiltInTab = {
+  kind: 'builtin',
+  id: 'schedules',
+  labelKey: 'tabs.schedules',
+  icon: CalendarClock,
+};
+
 const TASKS_TAB: BuiltInTab = {
   kind: 'builtin',
   id: 'tasks',
@@ -73,6 +81,7 @@ export default function WorkspaceTabs({
   const builtInTabs: BuiltInTab[] = [
     ...BASE_TABS,
     BUILDS_TAB,
+    SCHEDULES_TAB,
     ...(shouldShowBrowserTab ? [BROWSER_TAB] : []),
     ...(shouldShowTasksTab ? [TASKS_TAB] : []),
   ];

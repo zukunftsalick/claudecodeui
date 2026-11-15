@@ -15,6 +15,7 @@ import { EditorSidebar, useEditorSidebar } from '@/modules/code-editor';
 import { DevPreviewMenu, useDevServers } from '@/modules/dev-preview';
 import { ThreadsMenuButton, useProjectThreads } from '@/modules/threads';
 import { XcodeCloudPanel } from '@/modules/xcode-cloud';
+import { SchedulesPanel } from '@/modules/schedules';
 import WorkspaceHeader from '@/modules/project-workspace/WorkspaceHeader';
 import WorkspaceStateView from '@/modules/project-workspace/WorkspaceStateView';
 import WorkspaceErrorBoundary from '@/modules/project-workspace/WorkspaceErrorBoundary';
@@ -266,6 +267,12 @@ function WorkspaceMain({
           {activeTab === 'builds' && (
             <div className="h-full overflow-hidden">
               <XcodeCloudPanel onFileOpen={resolvedFileOpen} />
+            </div>
+          )}
+
+          {activeTab === 'schedules' && (
+            <div className="h-full overflow-hidden">
+              <SchedulesPanel projectPath={selectedProject?.path ?? null} onOpenSession={openThreadSession} />
             </div>
           )}
 
