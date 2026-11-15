@@ -1846,6 +1846,9 @@ export type SidebarProjectListProps = SessionRowActions & {
  */
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+/** The colour theme picked in Settings › Appearance, applied as `data-color-theme` on <html>; each works in light and dark mode. `default` is CloudCLI's original look. */
+export type ColorTheme = 'default' | 'evergreen' | 'contrast';
+
 /** The ordering applied to the project list, either alphabetically by name or by most recent activity, persisted alongside the user's appearance settings. */
 export type ProjectSortOrder = 'name' | 'date';
 

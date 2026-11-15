@@ -18,6 +18,8 @@ import { CODE_EDITOR_STORAGE_KEYS } from '@/shared/constants';
 /** Every setting the server stores for a user. */
 export type UserPreferences = {
   theme: 'light' | 'dark';
+  /** Colour theme from Settings › Appearance; see ColorTheme. */
+  colorTheme: string;
   userLanguage: string;
   tasksEnabled: boolean;
   projectSortOrder: 'name' | 'date';
@@ -55,6 +57,8 @@ const SERVER_WRITE_DEBOUNCE_MS = 400;
  */
 const LEGACY_STORAGE_KEYS: Record<UserPreferenceKey, string> = {
   theme: 'theme',
+  // Newer than the localStorage era, so there is nothing to migrate.
+  colorTheme: '',
   userLanguage: 'userLanguage',
   tasksEnabled: 'tasks-enabled',
   projectSortOrder: 'claude-settings',

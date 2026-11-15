@@ -2,12 +2,20 @@ import { useTranslation } from 'react-i18next';
 
 import { useUiPreferences, useSetUiPreference } from '@/shared/context/UiPreferencesContext';
 import { useTheme } from '@/shared/context/ThemeContext';
-import type { CodeEditorSettingsState, ProjectSortOrder, ThemeMode } from '@/shared/types';
+import type { CodeEditorSettingsState, ColorTheme, ProjectSortOrder, ThemeMode } from '@/shared/types';
+import { cn } from '@/shared/utils';
 import { LanguageSelector } from '@/modules/i18n';
 import SettingsCard from '@/modules/settings/SettingsCard';
 import SettingsRow from '@/modules/settings/SettingsRow';
 import SettingsSection from '@/modules/settings/SettingsSection';
 import SettingsToggle from '@/modules/settings/SettingsToggle';
+
+// Sample colours for each swatch: page, card, accent and text, in light and dark mode.
+const COLOR_THEME_SWATCHES: Array<{ id: ColorTheme; light: string[]; dark: string[] }> = [
+  { id: 'default', light: ['#f7f6f2', '#ffffff', '#2563eb', '#0d0b08'], dark: ['#141414', '#1f1f1f', '#3b82f6', '#eeece8'] },
+  { id: 'evergreen', light: ['#f6f7f4', '#ffffff', '#1e6b47', '#18201a'], dark: ['#111613', '#19201b', '#6fcf97', '#e4eae5'] },
+  { id: 'contrast', light: ['#ffffff', '#ededed', '#0040c1', '#000000'], dark: ['#000000', '#1c1c1c', '#ffd400', '#ffffff'] },
+];
 
 type AppearanceSettingsTabProps = {
   projectSortOrder: ProjectSortOrder;
@@ -30,7 +38,7 @@ export default function AppearanceSettingsTab({
   onCodeEditorFontSizeChange,
 }: AppearanceSettingsTabProps) {
   const { t } = useTranslation('settings');
-  const { themeMode, setThemeMode } = useTheme();
+  const { themeMode, setThemeMode, colorTheme, setColorTheme, isDarkMode } = useTheme();
   const preferences = useUiPreferences();
   const setPreference = useSetUiPreference();
 
@@ -52,6 +60,37 @@ export default function AppearanceSettingsTab({
               <option value="dark">{t('appearanceSettings.theme.dark')}</option>
               <option value="system">{t('appearanceSettings.theme.system')}</option>
             </select>
+          </SettingsRow>
+          <SettingsRow
+            label={t('appearanceSettings.colorTheme.label', { defaultValue: 'Color theme' })}
+            description={t('appearanceSettings.colorTheme.description', { defaultValue: 'Colors and font for the whole app. Each works in light and dark mode.' })}
+          >
+            <div role="radiogroup" aria-label={t('appearanceSettings.colorTheme.label', { defaultValue: 'Color theme' })} className="flex flex-wrap gap-2">
+              {COLOR_THEME_SWATCHES.map((swatch) => {
+                const [page, card, accent, text] = isDarkMode ? swatch.dark : swatch.light;
+                const selected = colorTheme === swatch.id;
+                return (
+                  <button
+                    key={swatch.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setColorTheme(swatch.id)}
+                    className={cn(
+                      'flex min-h-[44px] touch-manipulation items-center gap-2 rounded-lg border p-1.5 pr-3 text-sm text-foreground transition-colors',
+                      selected ? 'border-primary ring-2 ring-primary' : 'border-input hover:bg-accent',
+                    )}
+                  >
+                    <span aria-hidden="true" className="flex h-8 w-10 items-end gap-0.5 rounded-md border border-input p-1" style={{ backgroundColor: page }}>
+                      <span className="h-full w-3 rounded-sm" style={{ backgroundColor: card }} />
+                      <span className="h-3/4 w-2 rounded-sm" style={{ backgroundColor: accent }} />
+                      <span className="h-1/2 w-2 rounded-sm" style={{ backgroundColor: text }} />
+                    </span>
+                    {t(`appearanceSettings.colorTheme.${swatch.id}`)}
+                  </button>
+                );
+              })}
+            </div>
           </SettingsRow>
         </SettingsCard>
       </SettingsSection>

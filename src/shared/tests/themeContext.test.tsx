@@ -197,3 +197,38 @@ test('a stored value written by a newer client falls back to following the syste
   assert.equal(result.current.themeMode, 'system');
   assert.equal(result.current.isDarkMode, true);
 });
+
+test('the colour theme starts as the default look and is not written on mount', () => {
+  delete document.documentElement.dataset.colorTheme;
+  const { result } = renderHook(() => useTheme(), { wrapper });
+
+  assert.equal(result.current.colorTheme, 'default');
+  assert.equal(document.documentElement.dataset.colorTheme, undefined);
+  assert.equal(readUserPreference('colorTheme', null), null);
+});
+
+test('picking a colour theme stores it and puts it on <html>; default removes it', () => {
+  const { result } = renderHook(() => useTheme(), { wrapper });
+
+  act(() => result.current.setColorTheme('evergreen'));
+  assert.equal(result.current.colorTheme, 'evergreen');
+  assert.equal(document.documentElement.dataset.colorTheme, 'evergreen');
+  assert.equal(readUserPreference('colorTheme', null), 'evergreen');
+
+  act(() => result.current.setColorTheme('default'));
+  assert.equal(document.documentElement.dataset.colorTheme, undefined);
+  assert.equal(readUserPreference('colorTheme', null), 'default');
+});
+
+test('a stored colour theme applies on the first render, and an unknown one falls back', () => {
+  writeUserPreference('colorTheme', 'contrast');
+  const { result, unmount } = renderHook(() => useTheme(), { wrapper });
+  assert.equal(result.current.colorTheme, 'contrast');
+  assert.equal(document.documentElement.dataset.colorTheme, 'contrast');
+  unmount();
+
+  writeUserPreference('colorTheme', 'neon');
+  const second = renderHook(() => useTheme(), { wrapper });
+  assert.equal(second.result.current.colorTheme, 'default');
+  assert.equal(document.documentElement.dataset.colorTheme, undefined);
+});

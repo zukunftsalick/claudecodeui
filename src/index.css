@@ -117,6 +117,239 @@
     --nav-input-bg: 0 0% 17% / 0.5;
     --nav-input-focus-ring: 217.2 91.2% 59.8% / 0.25;
   }
+
+  /* Colour themes (Settings › Appearance). A theme recolours the semantic tokens above and
+     the gray/blue palette that tailwind.config.js maps onto --gray-* and --blue-*, so the many
+     components that use Tailwind's gray and blue classes follow the theme too. */
+  :root {
+    --font-sans: "Encode Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-serif: Merriweather, Georgia, Cambria, "Times New Roman", serif;
+    /* Tailwind's own gray and blue, so the default theme looks exactly as before. */
+    --gray-50: 249 250 251;
+    --gray-100: 243 244 246;
+    --gray-200: 229 231 235;
+    --gray-300: 209 213 219;
+    --gray-400: 156 163 175;
+    --gray-500: 107 114 128;
+    --gray-600: 75 85 99;
+    --gray-700: 55 65 81;
+    --gray-800: 31 41 55;
+    --gray-900: 17 24 39;
+    --gray-950: 3 7 18;
+    --blue-50: 239 246 255;
+    --blue-100: 219 234 254;
+    --blue-200: 191 219 254;
+    --blue-300: 147 197 253;
+    --blue-400: 96 165 250;
+    --blue-500: 59 130 246;
+    --blue-600: 37 99 235;
+    --blue-700: 29 78 216;
+    --blue-800: 30 64 175;
+    --blue-900: 30 58 138;
+    --blue-950: 23 37 84;
+  }
+
+  :root[data-color-theme="evergreen"] {
+    --background: 80 15.8% 96.3%;
+    --foreground: 135 14.3% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 135 14.3% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 135 14.3% 11%;
+    --primary: 151.9 56.2% 26.9%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 82.5 16% 90.2%;
+    --secondary-foreground: 144 11.6% 16.9%;
+    --muted: 82.5 16% 90.2%;
+    --muted-foreground: 144 5.5% 35.7%;
+    --accent: 82.5 16% 90.2%;
+    --accent-foreground: 144 11.6% 16.9%;
+    --border: 85 14.3% 83.5%;
+    --input: 85 14.3% 83.5%;
+    --ring: 151.9 56.2% 26.9%;
+    --nav-glass-bg: 80 15.8% 96.3% / 0.7;
+    --nav-tab-glow: 151.9 56.2% 26.9% / 0.2;
+    --nav-tab-ring: 151.9 56.2% 26.9% / 0.14;
+    --nav-float-ring: 85 14.3% 83.5% / 0.5;
+    --nav-divider-color: 85 14.3% 83.5% / 0.5;
+    --nav-input-bg: 82.5 16% 90.2% / 0.5;
+    --nav-input-focus-ring: 151.9 56.2% 26.9% / 0.25;
+    --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --gray-50: 247 248 245;
+    --gray-100: 240 242 237;
+    --gray-200: 226 230 222;
+    --gray-300: 205 211 200;
+    --gray-400: 152 162 151;
+    --gray-500: 106 117 107;
+    --gray-600: 76 86 78;
+    --gray-700: 54 64 57;
+    --gray-800: 31 39 34;
+    --gray-900: 18 25 21;
+    --gray-950: 7 11 9;
+    --blue-50: 238 248 242;
+    --blue-100: 215 239 224;
+    --blue-200: 178 223 196;
+    --blue-300: 128 201 160;
+    --blue-400: 79 174 124;
+    --blue-500: 47 148 97;
+    --blue-600: 31 122 77;
+    --blue-700: 26 100 63;
+    --blue-800: 23 80 52;
+    --blue-900: 19 65 43;
+    --blue-950: 10 36 24;
+  }
+  :root[data-color-theme="evergreen"].dark {
+    --background: 144 12.8% 7.6%;
+    --foreground: 130 12.5% 90.6%;
+    --card: 137.1 12.3% 11.2%;
+    --card-foreground: 130 12.5% 90.6%;
+    --popover: 137.1 12.3% 11.2%;
+    --popover-foreground: 130 12.5% 90.6%;
+    --primary: 145 50% 62.4%;
+    --primary-foreground: 148.4 42.2% 8.8%;
+    --secondary: 140 11.7% 15.1%;
+    --secondary-foreground: 130 12.5% 90.6%;
+    --muted: 140 11.7% 15.1%;
+    --muted-foreground: 135 6.7% 65.1%;
+    --accent: 140 11.7% 15.1%;
+    --accent-foreground: 130 12.5% 90.6%;
+    --border: 136.4 10.7% 20.2%;
+    --input: 140 10% 23.5%;
+    --ring: 145 50% 62.4%;
+    --nav-glass-bg: 144 12.8% 7.6% / 0.7;
+    --nav-tab-glow: 145 50% 62.4% / 0.2;
+    --nav-tab-ring: 145 50% 62.4% / 0.14;
+    --nav-float-ring: 136.4 10.7% 20.2% / 0.5;
+    --nav-divider-color: 136.4 10.7% 20.2% / 0.5;
+    --nav-input-bg: 140 11.7% 15.1% / 0.5;
+    --nav-input-focus-ring: 145 50% 62.4% / 0.25;
+    --gray-50: 247 248 245;
+    --gray-100: 240 242 237;
+    --gray-200: 226 230 222;
+    --gray-300: 205 211 200;
+    --gray-400: 160 172 163;
+    --gray-500: 119 131 122;
+    --gray-600: 83 96 86;
+    --gray-700: 56 68 60;
+    --gray-800: 31 40 34;
+    --gray-900: 20 26 22;
+    --gray-950: 11 15 12;
+    --blue-50: 238 248 242;
+    --blue-100: 215 239 224;
+    --blue-200: 182 235 203;
+    --blue-300: 143 220 176;
+    --blue-400: 111 207 151;
+    --blue-500: 63 174 115;
+    --blue-600: 33 112 74;
+    --blue-700: 27 92 61;
+    --blue-800: 23 74 51;
+    --blue-900: 22 69 46;
+    --blue-950: 12 42 27;
+  }
+
+  :root[data-color-theme="contrast"] {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 220.1 100% 37.8%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 92.9%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 92.9%;
+    --muted-foreground: 0 0% 18%;
+    --accent: 222.9 100% 94.5%;
+    --accent-foreground: 0 0% 0%;
+    --border: 0 0% 10.2%;
+    --input: 0 0% 0%;
+    --ring: 220.1 100% 37.8%;
+    --nav-glass-bg: 0 0% 100% / 0.7;
+    --nav-tab-glow: 220.1 100% 37.8% / 0.2;
+    --nav-tab-ring: 220.1 100% 37.8% / 0.14;
+    --nav-float-ring: 0 0% 10.2% / 0.5;
+    --nav-divider-color: 0 0% 10.2% / 0.5;
+    --nav-input-bg: 0 0% 92.9% / 0.5;
+    --nav-input-focus-ring: 220.1 100% 37.8% / 0.25;
+    --font-sans: "Atkinson Hyperlegible", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-serif: "Atkinson Hyperlegible", Georgia, serif;
+    --gray-50: 255 255 255;
+    --gray-100: 242 242 242;
+    --gray-200: 224 224 224;
+    --gray-300: 138 138 138;
+    --gray-400: 92 92 92;
+    --gray-500: 61 61 61;
+    --gray-600: 38 38 38;
+    --gray-700: 26 26 26;
+    --gray-800: 15 15 15;
+    --gray-900: 5 5 5;
+    --gray-950: 0 0 0;
+    --blue-50: 238 243 255;
+    --blue-100: 219 229 255;
+    --blue-200: 184 203 255;
+    --blue-300: 133 166 255;
+    --blue-400: 61 111 230;
+    --blue-500: 26 79 214;
+    --blue-600: 0 64 193;
+    --blue-700: 0 51 154;
+    --blue-800: 0 40 120;
+    --blue-900: 0 29 87;
+    --blue-950: 0 17 58;
+  }
+  :root[data-color-theme="contrast"].dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 4.3%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 4.3%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 49.9 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 11%;
+    --muted-foreground: 0 0% 83.9%;
+    --accent: 50.2 100% 8.4%;
+    --accent-foreground: 0 0% 100%;
+    --border: 0 0% 90.2%;
+    --input: 0 0% 100%;
+    --ring: 49.9 100% 50%;
+    --nav-glass-bg: 0 0% 0% / 0.7;
+    --nav-tab-glow: 49.9 100% 50% / 0.2;
+    --nav-tab-ring: 49.9 100% 50% / 0.14;
+    --nav-float-ring: 0 0% 90.2% / 0.5;
+    --nav-divider-color: 0 0% 90.2% / 0.5;
+    --nav-input-bg: 0 0% 11% / 0.5;
+    --nav-input-focus-ring: 49.9 100% 50% / 0.25;
+    --gray-50: 255 255 255;
+    --gray-100: 250 250 250;
+    --gray-200: 240 240 240;
+    --gray-300: 230 230 230;
+    --gray-400: 212 212 212;
+    --gray-500: 176 176 176;
+    --gray-600: 140 140 140;
+    --gray-700: 107 107 107;
+    --gray-800: 20 20 20;
+    --gray-900: 0 0 0;
+    --gray-950: 0 0 0;
+    --blue-50: 238 243 255;
+    --blue-100: 219 229 255;
+    --blue-200: 194 214 255;
+    --blue-300: 168 200 255;
+    --blue-400: 138 180 255;
+    --blue-500: 74 125 255;
+    --blue-600: 26 79 214;
+    --blue-700: 22 64 176;
+    --blue-800: 16 48 138;
+    --blue-900: 10 34 102;
+    --blue-950: 6 21 64;
+  }
+
+  /* Slightly larger type for legibility. */
+  :root[data-color-theme="contrast"] {
+    font-size: 106.25%;
+  }
 }
 
 @layer base {
@@ -129,7 +362,7 @@
   body {
     @apply bg-background text-foreground;
 
-    font-family: "Encode Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     margin: 0;

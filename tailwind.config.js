@@ -1,3 +1,7 @@
+const SCALE_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+const themedScale = (name) =>
+  Object.fromEntries(SCALE_STEPS.map((step) => [step, `rgb(var(--${name}-${step}) / <alpha-value>)`]));
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
@@ -15,10 +19,15 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"Encode Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-        serif: ['Merriweather', 'Georgia', 'Cambria', '"Times New Roman"', 'serif'],
+        // Set per colour theme in src/index.css (default: Encode Sans and Merriweather).
+        sans: ['var(--font-sans)'],
+        serif: ['var(--font-serif)'],
       },
       colors: {
+        // Tailwind's gray and blue read CSS variables so a colour theme can recolour the
+        // components that use them. The default values in src/index.css are Tailwind's own.
+        gray: themedScale('gray'),
+        blue: themedScale('blue'),
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

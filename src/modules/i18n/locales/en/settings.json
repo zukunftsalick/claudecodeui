@@ -268,6 +268,13 @@
       "section": "Sidebar",
       "label": "Keep projects expanded",
       "description": "Open several projects together and remember them after reloading."
+    },
+    "colorTheme": {
+      "label": "Color theme",
+      "description": "Colors and font for the whole app. Each works in light and dark mode.",
+      "default": "Default",
+      "evergreen": "Evergreen",
+      "contrast": "Contrast"
     }
   },
   "mcpForm": {

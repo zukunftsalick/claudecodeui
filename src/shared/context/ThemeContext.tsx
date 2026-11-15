@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
-import type { ThemeMode } from '@/shared/types';
+import type { ColorTheme, ThemeMode } from '@/shared/types';
 import {
   readUserPreference,
   subscribeToUserPreferences,
@@ -13,6 +13,32 @@ type ThemeContextValue = {
   toggleDarkMode: () => void;
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
+  colorTheme: ColorTheme;
+  setColorTheme: (theme: ColorTheme) => void;
+};
+
+const COLOR_THEMES: readonly ColorTheme[] = ['default', 'evergreen', 'contrast'];
+
+/** The stored colour theme; anything unknown (or nothing) is the original look. */
+const readStoredColorTheme = (): ColorTheme => {
+  const saved = readUserPreference<string | null>('colorTheme', null);
+  return COLOR_THEMES.includes(saved as ColorTheme) ? (saved as ColorTheme) : 'default';
+};
+
+/** Page backgrounds per theme and mode, for the browser's theme-color (mobile status bar). */
+const THEME_COLOR: Record<ColorTheme, { light: string; dark: string }> = {
+  default: { light: '#f6f4ef', dark: '#141414' },
+  evergreen: { light: '#f6f7f4', dark: '#111613' },
+  contrast: { light: '#ffffff', dark: '#000000' },
+};
+
+/** Puts the colour theme on <html>, where src/index.css picks it up. The default theme has no attribute. */
+const applyColorTheme = (theme: ColorTheme): void => {
+  if (theme === 'default') {
+    delete document.documentElement.dataset.colorTheme;
+  } else {
+    document.documentElement.dataset.colorTheme = theme;
+  }
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -45,7 +71,7 @@ export const useTheme = () => {
   return context;
 };
 
-/** Mounted once by App so every module can read and switch the colour theme through useTheme. */
+/** Mounted once by App so every module can read and switch light/dark mode and the colour theme through useTheme. */
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // The mode the user chose, not the colour it currently resolves to: only the
   // mode is persisted, and `system` has to keep tracking the OS afterwards.
@@ -55,6 +81,13 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // The resolved colour. It is not derivable from `themeMode` alone, because
   // under `system` it changes when the OS does, with no state change here.
   const [isDarkMode, setIsDarkMode] = useState(() => resolveIsDarkMode(readStoredThemeMode()));
+  // The colour theme the user picked. Applied in the initializer as well as the
+  // effect below, so the first paint already uses it instead of flashing the default.
+  const [colorTheme, setColorThemeState] = useState<ColorTheme>(() => {
+    const stored = readStoredColorTheme();
+    applyColorTheme(stored);
+    return stored;
+  });
 
   // The theme now lives in auth.db, so a change made on another device (or in
   // another tab) arrives through the preference store rather than a re-render.
@@ -62,7 +95,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     const storedMode = readStoredThemeMode();
     setThemeModeState(storedMode);
     setIsDarkMode(resolveIsDarkMode(storedMode));
+    setColorThemeState(readStoredColorTheme());
   }), []);
+
+  useEffect(() => {
+    applyColorTheme(colorTheme);
+  }, [colorTheme]);
 
   // Applying the theme to the document and persisting it are deliberately
   // separate. Persisting from here would also fire on mount — before the stored
@@ -80,7 +118,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
       const themeColorMeta = document.querySelector('meta[name="theme-color"]');
       if (themeColorMeta) {
-        themeColorMeta.setAttribute('content', '#141414'); // Dark background color (hsl(0 0% 8%))
+        themeColorMeta.setAttribute('content', THEME_COLOR[colorTheme].dark);
       }
     } else {
       document.documentElement.classList.remove('dark');
@@ -93,10 +131,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
       const themeColorMeta = document.querySelector('meta[name="theme-color"]');
       if (themeColorMeta) {
-        themeColorMeta.setAttribute('content', '#f6f4ef'); // Light background color (warm cream)
+        themeColorMeta.setAttribute('content', THEME_COLOR[colorTheme].light);
       }
     }
-  }, [isDarkMode]);
+  }, [isDarkMode, colorTheme]);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -123,6 +161,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setIsDarkMode(resolveIsDarkMode(mode));
   }, []);
 
+  // Like setThemeMode: stored only because the user picked it.
+  const setColorTheme = useCallback((theme: ColorTheme) => {
+    writeUserPreference('colorTheme', theme);
+    setColorThemeState(theme);
+  }, []);
+
   // Kept for the callers that only offer a light/dark switch: choosing either
   // one is an explicit choice, so it leaves `system` behind exactly as before.
   const toggleDarkMode = useCallback(() => {
@@ -137,8 +181,8 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // A fresh object here would re-render every consumer in the app on any
   // render of this provider, theme change or not.
   const value = useMemo<ThemeContextValue>(
-    () => ({ isDarkMode, toggleDarkMode, themeMode, setThemeMode }),
-    [isDarkMode, toggleDarkMode, themeMode, setThemeMode],
+    () => ({ isDarkMode, toggleDarkMode, themeMode, setThemeMode, colorTheme, setColorTheme }),
+    [isDarkMode, toggleDarkMode, themeMode, setThemeMode, colorTheme, setColorTheme],
   );
 
   return (
