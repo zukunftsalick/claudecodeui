@@ -132,9 +132,8 @@
   },
   "search": {
     "modeProjects": "Projekte",
-    "modeConversations": "Unterhaltungen",
     "modeMore": "Mehr",
-    "conversationsPlaceholder": "In Unterhaltungen suchen...",
+    "projectsAndConversationsPlaceholder": "Projekte und Unterhaltungen durchsuchen...",
     "searching": "Sucht...",
     "sessionTitles": "Sitzungstitel",
     "conversationContents": "Unterhaltungsinhalte",

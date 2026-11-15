@@ -16,7 +16,6 @@ import SidebarModeTabs from '@/modules/sidebar/SidebarModeTabs';
 
 const LABELS: Record<string, string> = {
   'search.modeProjects': 'Projects',
-  'search.modeConversations': 'Conversations',
   'search.runningTooltip': 'Running sessions',
   'search.archiveOnlyTooltip': 'Archive only',
   'search.modeMore': 'More',
@@ -52,33 +51,35 @@ test('a wide row shows every tab and no overflow menu', () => {
   renderTabs(400, 'projects');
 
   assert.ok(screen.getByRole('button', { name: 'Projects' }));
-  assert.ok(screen.getByRole('button', { name: 'Conversations' }));
   assert.ok(screen.getByRole('button', { name: 'Running sessions' }));
   assert.ok(screen.getByRole('button', { name: 'Archive only' }));
   assert.equal(screen.queryByRole('button', { name: 'More' }), null);
 });
 
+test('conversations have no tab of their own: they are listed under the projects', () => {
+  renderTabs(400, 'projects');
+
+  assert.equal(screen.queryByRole('button', { name: 'Conversations' }), null);
+  assert.equal(screen.getAllByRole('button').length, 3);
+});
+
 test('a narrow row moves the tabs that no longer fit into the dropdown', () => {
-  const changes = renderTabs(220, 'projects');
+  const changes = renderTabs(140, 'projects');
 
   assert.ok(screen.getByRole('button', { name: 'Projects' }));
-  assert.equal(screen.queryByRole('button', { name: 'Conversations' }), null);
+  assert.equal(screen.queryByRole('button', { name: 'Archive only' }), null);
 
   fireEvent.click(screen.getByRole('button', { name: 'More' }));
-  assert.ok(screen.getByRole('menuitem', { name: 'Running sessions' }));
-  assert.ok(screen.getByRole('menuitem', { name: 'Archive only' }));
-
-  fireEvent.click(screen.getByRole('menuitem', { name: 'Conversations' }));
-  assert.deepEqual(changes, ['conversations']);
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Archive only' }));
+  assert.deepEqual(changes, ['archived']);
 });
 
 test('the section on screen keeps its place in the row', () => {
-  renderTabs(220, 'archived');
+  renderTabs(140, 'archived');
 
   // Archive is the last tab and the first to be dropped on width alone, but it
   // is the open section, so the strip has to keep showing it as pressed.
   const archive = screen.getByRole('button', { name: 'Archive only' });
   assert.equal(archive.getAttribute('aria-pressed'), 'true');
-  assert.equal(screen.queryByRole('button', { name: 'Conversations' }), null);
   assert.ok(screen.getByRole('button', { name: 'More' }));
 });

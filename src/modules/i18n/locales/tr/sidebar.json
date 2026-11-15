@@ -135,9 +135,8 @@
   },
   "search": {
     "modeProjects": "Projeler",
-    "modeConversations": "Konuşmalar",
     "modeMore": "Daha fazla",
-    "conversationsPlaceholder": "Konuşmalarda ara...",
+    "projectsAndConversationsPlaceholder": "Projelerde ve konuşmalarda ara...",
     "searching": "Aranıyor...",
     "sessionTitles": "Oturum başlıkları",
     "conversationContents": "Konuşma içerikleri",

@@ -129,8 +129,8 @@
   },
   "search": {
     "modeProjects": "プロジェクト",
-    "modeConversations": "会話",
-    "modeMore": "その他"
+    "modeMore": "その他",
+    "projectsAndConversationsPlaceholder": "プロジェクトと会話を検索..."
   },
   "deleteConfirmation": {
     "deleteProject": "プロジェクトを除去",

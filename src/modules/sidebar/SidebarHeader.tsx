@@ -71,13 +71,11 @@ export default function SidebarHeader({
   t,
 }: SidebarHeaderProps) {
   const showSearchTools = (projectsCount > 0 || runningSessionsCount > 0 || archivedSessionsCount > 0 || isArchivedSessionsLoading) && !isLoading;
-  const searchPlaceholder = searchMode === 'conversations'
-    ? t('search.conversationsPlaceholder')
-    : searchMode === 'archived'
-      ? t('search.archivedPlaceholder', 'Search archived sessions...')
-      : searchMode === 'running'
-        ? t('search.runningPlaceholder', 'Search running sessions...')
-        : t('projects.searchPlaceholder');
+  const searchPlaceholder = searchMode === 'archived'
+    ? t('search.archivedPlaceholder', 'Search archived sessions...')
+    : searchMode === 'running'
+      ? t('search.runningPlaceholder', 'Search running sessions...')
+      : t('search.projectsAndConversationsPlaceholder', 'Search projects and chats...');
 
   return (
     <div className="flex-shrink-0">

@@ -142,11 +142,10 @@
   },
   "search": {
     "modeProjects": "Proyectos",
-    "modeConversations": "Conversaciones",
     "modeMore": "Más",
     "runningTooltip": "Sesiones en ejecución",
     "archiveOnlyTooltip": "Solo archivados",
-    "conversationsPlaceholder": "Buscar en conversaciones...",
+    "projectsAndConversationsPlaceholder": "Buscar proyectos y conversaciones...",
     "runningPlaceholder": "Buscar sesiones en ejecución...",
     "archivedPlaceholder": "Buscar sesiones archivadas...",
     "searching": "Buscando...",

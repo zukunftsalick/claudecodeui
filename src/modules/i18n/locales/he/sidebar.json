@@ -140,11 +140,10 @@
   },
   "search": {
     "modeProjects": "פרויקטים",
-    "modeConversations": "שיחות",
     "modeMore": "עוד",
     "runningTooltip": "סשנים פועלים",
     "archiveOnlyTooltip": "ארכיון בלבד",
-    "conversationsPlaceholder": "חיפוש בשיחות...",
+    "projectsAndConversationsPlaceholder": "חיפוש בפרויקטים ובשיחות...",
     "runningPlaceholder": "חיפוש בסשנים פועלים...",
     "archivedPlaceholder": "חיפוש בסשנים בארכיון...",
     "searching": "מחפש...",

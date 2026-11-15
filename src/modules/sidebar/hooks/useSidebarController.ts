@@ -387,14 +387,14 @@ export function useSidebarController({
   }, [fetchArchivedSessions]);
 
   useEffect(() => {
-    if (searchMode !== 'conversations' || debouncedSearchQuery.length >= 2) {
+    if (searchMode !== 'projects' || debouncedSearchQuery.length >= 2) {
       return;
     }
 
     reloadRecentConversations();
   }, [debouncedSearchQuery, reloadRecentConversations, searchMode]);
 
-  // The Conversations list is only fetched when its tab opens, while `projects`
+  // The recent conversations list is only fetched when the Projects tab opens, while `projects`
   // is patched the moment a session is renamed from the workspace header. Fold
   // those title changes into the rows already loaded, or a header rename would
   // leave the highlighted conversation on its old name. The loaded rows are
@@ -486,7 +486,7 @@ export function useSidebarController({
     }
 
     const query = debouncedSearchQuery;
-    if (searchMode !== 'conversations' || query.length < 2) {
+    if (searchMode !== 'projects' || query.length < 2) {
       searchSeqRef.current += 1;
       setConversationResults(null);
       setSearchProgress(null);
@@ -1219,7 +1219,7 @@ export function useSidebarController({
       await Promise.all([
         Promise.resolve(onRefresh()),
         fetchArchivedSessions(),
-        searchMode === 'conversations'
+        searchMode === 'projects'
           ? fetchRecentConversationsPage(0, false)
           : Promise.resolve(),
       ]);

@@ -132,9 +132,8 @@
   },
   "search": {
     "modeProjects": "Progetti",
-    "modeConversations": "Conversazioni",
     "modeMore": "Altro",
-    "conversationsPlaceholder": "Cerca nelle conversazioni...",
+    "projectsAndConversationsPlaceholder": "Cerca progetti e conversazioni...",
     "searching": "Ricerca in corso...",
     "sessionTitles": "Titoli delle sessioni",
     "conversationContents": "Contenuto delle conversazioni",

@@ -130,9 +130,8 @@
   },
   "search": {
     "modeProjects": "Proyek",
-    "modeConversations": "Percakapan",
     "modeMore": "Lainnya",
-    "conversationsPlaceholder": "Cari dalam percakapan...",
+    "projectsAndConversationsPlaceholder": "Cari proyek dan percakapan...",
     "searching": "Mencari...",
     "sessionTitles": "Sesi",
     "conversationContents": "Isi percakapan",

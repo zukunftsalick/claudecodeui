@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Activity, Archive, Folder, MessageSquare, MoreHorizontal } from 'lucide-react';
+import { Activity, Archive, Folder, MoreHorizontal } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { TFunction } from 'i18next';
 
@@ -27,7 +27,7 @@ type SidebarModeTabsProps = {
  * Used by SidebarHeader for the section strip above the search box, in both the
  * desktop and the mobile header.
  *
- * The sidebar is resizable, so the strip cannot assume it has room for all four
+ * The sidebar is resizable, so the strip cannot assume it has room for all its
  * tabs: the ones that no longer fit move into a "…" dropdown at its right edge
  * instead of spilling out over the panel.
  */
@@ -39,7 +39,6 @@ export default function SidebarModeTabs({
 }: SidebarModeTabsProps) {
   const tabs: ModeTab[] = [
     { mode: 'projects', label: t('search.modeProjects'), icon: Folder, showLabel: true },
-    { mode: 'conversations', label: t('search.modeConversations'), icon: MessageSquare, showLabel: true },
     { mode: 'running', label: t('search.runningTooltip', 'Running sessions'), icon: Activity, showLabel: false },
     { mode: 'archived', label: t('search.archiveOnlyTooltip', 'Archive only'), icon: Archive, showLabel: false },
   ];

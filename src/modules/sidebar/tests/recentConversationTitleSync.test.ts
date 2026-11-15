@@ -69,7 +69,7 @@ const renderController = (initialProjects: Project[]) => renderHook(
 const openConversationsTab = async (initialProjects: Project[]) => {
   const rendered = renderController(initialProjects);
   act(() => {
-    rendered.result.current.setSearchMode('conversations');
+    rendered.result.current.setSearchMode('projects');
   });
   await waitFor(() => {
     assert.equal(rendered.result.current.recentConversations.length, 2);

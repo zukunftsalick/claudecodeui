@@ -446,7 +446,7 @@ test('a bulk delete prunes the recents feed, lowers its total and refetches the 
   const { result } = renderController();
 
   act(() => {
-    result.current.setSearchMode('conversations');
+    result.current.setSearchMode('projects');
   });
   await waitFor(() => assert.equal(result.current.recentConversations.length, 3));
   assert.equal(result.current.recentConversationsTotal, 7);
@@ -580,7 +580,7 @@ test('the selection is dropped when the project collapses or the tab changes', (
     result.current.toggleSessionSelected('project-1', 's1');
   });
   act(() => {
-    result.current.setSearchMode('conversations');
+    result.current.setSearchMode('projects');
   });
   assert.equal(result.current.sessionSelection, null, 'so does leaving the Projects tab');
 });

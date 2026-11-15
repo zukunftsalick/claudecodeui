@@ -129,9 +129,8 @@
   },
   "search": {
     "modeProjects": "專案",
-    "modeConversations": "對話",
     "modeMore": "更多",
-    "conversationsPlaceholder": "搜尋對話內容...",
+    "projectsAndConversationsPlaceholder": "搜尋專案和對話...",
     "searching": "搜尋中...",
     "sessionTitles": "工作階段標題",
     "conversationContents": "對話內容",

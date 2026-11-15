@@ -132,9 +132,8 @@
   },
   "search": {
     "modeProjects": "프로젝트",
-    "modeConversations": "대화",
     "modeMore": "더 보기",
-    "conversationsPlaceholder": "대화 내용 검색...",
+    "projectsAndConversationsPlaceholder": "프로젝트 및 대화 검색...",
     "searching": "검색 중...",
     "sessionTitles": "세션 제목",
     "conversationContents": "대화 내용",

@@ -136,9 +136,8 @@
   },
   "search": {
     "modeProjects": "Проекты",
-    "modeConversations": "Разговоры",
     "modeMore": "Ещё",
-    "conversationsPlaceholder": "Поиск в разговорах...",
+    "projectsAndConversationsPlaceholder": "Поиск по проектам и беседам...",
     "searching": "Поиск...",
     "sessionTitles": "Названия сеансов",
     "conversationContents": "Содержимое разговоров",

@@ -133,11 +133,10 @@
   },
   "search": {
     "modeProjects": "Projekty",
-    "modeConversations": "Konverzace",
     "modeMore": "Další",
     "runningTooltip": "Běžící relace",
     "archiveOnlyTooltip": "Pouze archiv",
-    "conversationsPlaceholder": "Hledat v konverzacích...",
+    "projectsAndConversationsPlaceholder": "Hledat projekty a konverzace...",
     "runningPlaceholder": "Hledat v běžících relacích...",
     "archivedPlaceholder": "Hledat v archivovaných relacích...",
     "searching": "Hledání...",
