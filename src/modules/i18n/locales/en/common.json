@@ -25,6 +25,7 @@
     "tasks": "Tasks",
     "browser": "Browser",
     "builds": "Builds",
+    "schedules": "Schedules",
     "computer": "Computer"
   },
   "status": {

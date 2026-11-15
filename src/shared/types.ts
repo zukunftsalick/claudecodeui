@@ -69,7 +69,7 @@ export type ProviderModelActions = {
 //----------------- PROJECTS AND SESSIONS ------------
 
 /** Identifies the workspace pane the user is looking at; plugin panes are namespaced by plugin id. */
-export type AppTab = 'chat' | 'files' | 'shell' | 'git' | 'tasks' | 'browser' | 'builds' | `plugin:${string}`;
+export type AppTab = 'chat' | 'files' | 'shell' | 'git' | 'tasks' | 'browser' | 'builds' | 'schedules' | `plugin:${string}`;
 
 /** A message queued to be sent to a session at a future time. */
 export type ScheduledMessage = {
@@ -2136,3 +2136,51 @@ type TaskStatus =
 
 /** A TaskMaster task's priority; high, medium and low are the known values and the string fallback tolerates anything else TaskMaster emits. */
 type TaskPriority = 'high' | 'medium' | 'low' | string;
+
+// ---------------------------
+
+//----------------- SCHEDULES ------------
+
+/** One run of a scheduled task, from `/api/schedules/:id/runs`; the Schedules tab's history rows. `sessionId` is the chat the run happened in. */
+export type ScheduledTaskRun = {
+  id: string;
+  taskId: string;
+  sessionId: string | null;
+  trigger: 'schedule' | 'manual';
+  status: 'running' | 'succeeded' | 'failed' | 'skipped';
+  error: string | null;
+  lastReply: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+};
+
+/** A scheduled Claude task as `/api/schedules` lists it. Either `cronExpression` (read in `timezone`) or `runOnceAt` is set. */
+export type ScheduledTask = {
+  id: string;
+  name: string;
+  prompt: string;
+  projectPath: string;
+  cronExpression: string | null;
+  timezone: string;
+  runOnceAt: string | null;
+  enabled: boolean;
+  runOptions: { model?: string; effort?: string; permissionMode?: string };
+  nextRunAt: string | null;
+  sourceId: string | null;
+  scheduleLabel: string;
+  isRunning: boolean;
+  lastRun: ScheduledTaskRun | null;
+  createdAt: string;
+};
+
+/** The body the Schedules tab sends to create or edit a task. */
+export type ScheduledTaskDraft = {
+  name: string;
+  prompt: string;
+  projectPath: string;
+  cronExpression: string | null;
+  timezone: string;
+  runOnceAt: string | null;
+  enabled: boolean;
+  runOptions: { model?: string; permissionMode?: string };
+};

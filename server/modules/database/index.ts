@@ -33,3 +33,12 @@ export { userPreferencesDb } from '@/modules/database/repositories/user-preferen
 export { vapidKeysDb } from '@/modules/database/repositories/vapid-keys.js';
 export { scheduledMessagesDb } from './repositories/scheduled-messages.db.js';
 export type { ScheduledMessageRow, ScheduledMessageStatus } from './repositories/scheduled-messages.db.js';
+// scheduledTasksDb: used by the schedules module for the Schedules tab's tasks and their run history.
+export { scheduledTasksDb } from './repositories/scheduled-tasks.db.js';
+export type {
+  ScheduledTaskFields,
+  ScheduledTaskRow,
+  ScheduledTaskRunRow,
+  ScheduledTaskRunStatus,
+  ScheduledTaskRunTrigger,
+} from './repositories/scheduled-tasks.db.js';
