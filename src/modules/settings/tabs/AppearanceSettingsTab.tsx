@@ -49,12 +49,13 @@ export default function AppearanceSettingsTab({
           <SettingsRow
             label={t('appearanceSettings.theme.label')}
             description={t('appearanceSettings.theme.description')}
+            stackOnMobile
           >
             <select
               value={themeMode}
               onChange={(event) => setThemeMode(event.target.value as ThemeMode)}
               aria-label={t('appearanceSettings.theme.label')}
-              className="w-full touch-manipulation rounded-lg border border-input bg-card p-2.5 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary sm:w-36"
+              className="w-full touch-manipulation rounded-lg border border-input bg-card p-2.5 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary sm:w-auto sm:pr-9"
             >
               <option value="light">{t('appearanceSettings.theme.light')}</option>
               <option value="dark">{t('appearanceSettings.theme.dark')}</option>
@@ -64,8 +65,10 @@ export default function AppearanceSettingsTab({
           <SettingsRow
             label={t('appearanceSettings.colorTheme.label', { defaultValue: 'Color theme' })}
             description={t('appearanceSettings.colorTheme.description', { defaultValue: 'Colors and font for the whole app. Each works in light and dark mode.' })}
+            stackOnMobile
           >
-            <div role="radiogroup" aria-label={t('appearanceSettings.colorTheme.label', { defaultValue: 'Color theme' })} className="flex flex-wrap gap-2">
+            {/* Phones: three equal tiles, sample above the name. Wider screens: a row of chips beside the label. */}
+            <div role="radiogroup" aria-label={t('appearanceSettings.colorTheme.label', { defaultValue: 'Color theme' })} className="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto">
               {COLOR_THEME_SWATCHES.map((swatch) => {
                 const [page, card, accent, text] = isDarkMode ? swatch.dark : swatch.light;
                 const selected = colorTheme === swatch.id;
@@ -77,16 +80,16 @@ export default function AppearanceSettingsTab({
                     aria-checked={selected}
                     onClick={() => setColorTheme(swatch.id)}
                     className={cn(
-                      'flex min-h-[44px] touch-manipulation items-center gap-2 rounded-lg border p-1.5 pr-3 text-sm text-foreground transition-colors',
+                      'flex min-h-[44px] min-w-0 touch-manipulation flex-col items-center justify-center gap-1.5 rounded-lg border px-1 py-2 text-xs text-foreground transition-colors sm:flex-row sm:gap-2 sm:p-1.5 sm:pr-3 sm:text-sm',
                       selected ? 'border-primary ring-2 ring-primary' : 'border-input hover:bg-accent',
                     )}
                   >
-                    <span aria-hidden="true" className="flex h-8 w-10 items-end gap-0.5 rounded-md border border-input p-1" style={{ backgroundColor: page }}>
+                    <span aria-hidden="true" className="flex h-8 w-10 flex-shrink-0 items-end gap-0.5 rounded-md border border-input p-1" style={{ backgroundColor: page }}>
                       <span className="h-full w-3 rounded-sm" style={{ backgroundColor: card }} />
                       <span className="h-3/4 w-2 rounded-sm" style={{ backgroundColor: accent }} />
                       <span className="h-1/2 w-2 rounded-sm" style={{ backgroundColor: text }} />
                     </span>
-                    {t(`appearanceSettings.colorTheme.${swatch.id}`)}
+                    <span className="max-w-full truncate">{t(`appearanceSettings.colorTheme.${swatch.id}`)}</span>
                   </button>
                 );
               })}
